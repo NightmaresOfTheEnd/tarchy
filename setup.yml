@@ -184,7 +184,7 @@
     - name: Initialize and apply dotfiles with chezmoi
       ansible.builtin.command:
         # This command initializes, applies, and exits. Perfect for automation.
-        cmd: "chezmoi init --apply --one-shot https://github.com/your-username/dotfiles.git"
+        cmd: "chezmoi init --apply --one-shot https://github.com/NightmaresOfTheEnd/dotfiles.git"
         creates: "{{ ansible_user_dir }}/.local/share/chezmoi/chezmoi.toml"
       become: false
       when: not chezmoi_dir.stat.exists
