@@ -177,15 +177,14 @@
 
     - name: Check if dotfiles are already managed by chezmoi
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.local/share/chezmoi"
+        path: "{{ lookup('env', 'HOME') }}/.local/share/chezmoi"
       register: chezmoi_dir
       become: false
 
     - name: Initialize and apply dotfiles with chezmoi
       ansible.builtin.command:
-        # This command initializes, applies, and exits. Perfect for automation.
         cmd: "chezmoi init --apply --one-shot https://github.com/NightmaresOfTheEnd/dotfiles.git"
-        creates: "{{ ansible_env.HOME }}/.local/share/chezmoi/chezmoi.toml"
+        chdir: "{{ lookup('env', 'HOME') }}"
       become: false
       when: not chezmoi_dir.stat.exists
 
