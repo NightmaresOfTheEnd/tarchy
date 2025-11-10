@@ -121,7 +121,7 @@
 
   tasks:
     # Optional: refresh Arch mirrors using reflector (fastest recent)
-	- name: Refresh pacman mirrors with reflector
+    - name: Refresh pacman mirrors with reflector
       ansible.builtin.command: >
         reflector --latest 20 --sort rate
         --save /etc/pacman.d/mirrorlist
