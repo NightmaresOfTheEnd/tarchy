@@ -77,6 +77,10 @@
       - swaylock
       - swayidle
 
+      # --- Login Manager (Wayland) ---
+      - greetd
+      - greetd-tuigreet
+
       # --- UX & Networking ---
       - network-manager-applet
       - nm-connection-editor
@@ -176,6 +180,24 @@
         enabled: true
         state: started
       loop: "{{ services }}"
+
+    - name: Configure greetd (Hyprland session)
+      ansible.builtin.copy:
+        dest: /etc/greetd/config.toml
+        mode: '0644'
+        content: |
+          [terminal]
+          vt = 1
+
+          [default_session]
+          command = "tuigreet --time --remember --cmd Hyprland"
+          user = "greeter"
+
+    - name: Enable greetd
+      ansible.builtin.service:
+        name: greetd
+        enabled: true
+        state: started
 
     - name: Display completion summary
       ansible.builtin.debug:
