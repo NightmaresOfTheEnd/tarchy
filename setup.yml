@@ -1,0 +1,177 @@
+- name: Personal EndeavourOS setup (tiny + AUR/Flatpak)
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: true
+
+  collections:
+    - community.general
+    - kewlfft.aur
+
+  vars:
+    pacman_packages:
+      # - base-devel # <-- Removed, handled in pre_tasks
+      # - reflector # <-- Removed, handled in pre_tasks
+      - git
+      - curl
+      - wget
+      - zsh
+      - neovim
+      - ripgrep
+      - fd
+      - zip
+      - unzip
+      - unrar
+      - fastfetch
+      - openssh
+      - firewalld
+      - flatpak
+      - sudo
+      - man-db
+      - man-pages
+      - rsync
+      - pacman-contrib
+      - ntfs-3g
+      - networkmanager
+      - brightnessctl
+
+      # --- Audio ---
+      - pipewire
+      - pipewire-alsa
+      - pipewire-pulse
+      - pipewire-jack
+      - wireplumber
+      - alsa-utils
+
+      # --- Bluetooth ---
+      - bluez
+      - bluez-utils
+      - blueman
+
+      # --- Fonts ---
+      - noto-fonts
+      - noto-fonts-cjk
+      - noto-fonts-emoji
+      - noto-fonts-extra
+
+      # --- Hyprland Core ---
+      - hyprland
+      - wayland
+      - wayland-protocols
+      - xdg-desktop-portal
+      - xdg-desktop-portal-hyprland
+      - hyprpaper
+      - mako # Notification daemon (simple, Wayland-native)
+      # - dunst # Notification daemon (powerful, scriptable)
+      - gtk3
+      - qt5-wayland
+      - qt6-wayland
+      - grim
+      - slurp
+      - wl-clipboard
+      - waybar
+      - xorg-xwayland
+      - xdg-desktop-portal-gtk
+        
+      # --- Power Management ---
+      - swaylock
+      - swayidle
+
+      # --- UX & Networking ---
+      - network-manager-applet
+      - nm-connection-editor
+
+      # --- Ecosystem ---
+      - foot # Terminal
+      - firefox
+      - thunar # Lightweight GTK file manager
+      - gvfs # Backend for Thunar (trash, mounting, etc.)
+      - polkit-kde-agent # Authentication Agent
+      - polkit
+      - qt5ct
+      - qt6ct
+
+    aur_packages:        # edit to taste (leave as [] to avoid null)
+      - rofi-wayland
+      - nwg-look
+      - wlogout
+
+    flatpak_apps:           # optional
+      - com.discordapp.Discord
+
+    services:
+      - NetworkManager
+      - firewalld
+      - bluetooth
+      # - sshd            # uncomment if you actually want SSH enabled
+
+  pre_tasks:
+    - name: Ensure base-devel and reflector present (for builds/mirror mgmt)
+      community.general.pacman:
+        name:
+          - base-devel
+          - reflector
+        state: present
+        update_cache: true
+
+    - name: Upgrade system packages
+      community.general.pacman:
+        update_cache: true
+        upgrade: true
+
+  tasks:
+    # Optional: refresh Arch mirrors using reflector (fastest recent)
+	- name: Refresh pacman mirrors with reflector
+      ansible.builtin.command: >
+        reflector --latest 20 --sort rate
+        --save /etc/pacman.d/mirrorlist
+      register: reflector_run
+      changed_when: reflector_run.rc == 0
+
+    - name: Install repo packages
+      community.general.pacman:
+        name: "{{ pacman_packages }}"
+        state: present
+
+    - name: Install yay (bootstrap with makepkg if missing)
+      become: false
+      kewlfft.aur.aur:
+        use: makepkg
+        name: yay
+        state: present
+
+    - name: Install AUR packages with yay
+      become: false
+      kewlfft.aur.aur:
+        use: yay
+        name: "{{ aur_packages | default([]) }}"
+        state: present
+      when: (aur_packages | default([])) | length > 0
+
+    - name: Ensure Flathub remote (system-wide)
+      community.general.flatpak_remote:
+        name: flathub
+        state: present
+        method: system
+        flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+
+    - name: Install Flatpak apps (system-wide)
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ flatpak_apps | default([]) }}"
+
+    - name: Enable & start services
+      ansible.builtin.service:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop: "{{ services }}"
+
+    - name: Display completion summary
+      ansible.builtin.debug:
+        msg: >
+          Setup complete! Installed {{ pacman_packages | length }} repo packages,
+          {{ aur_packages | default([]) | length }} AUR packages, and
+          {{ flatpak_apps | default([]) | length }} Flatpak apps.
