@@ -10,8 +10,8 @@
 
   vars:
     pacman_packages:
-      # - base-devel # <-- Removed, handled in pre_tasks
-      # - reflector # <-- Removed, handled in pre_tasks
+      - base-devel # <-- Removed, handled in pre_tasks
+      - reflector # <-- Removed, handled in pre_tasks
       - git
       - curl
       - wget
