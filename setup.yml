@@ -128,6 +128,14 @@
       register: reflector_run
       changed_when: reflector_run.rc == 0
 
+    - name: Allow AUR builder to run pacman without password
+        become: true
+        copy:
+          dest: /etc/sudoers.d/11-aur
+          content: |
+            {{ ansible_user_id }} ALL=(ALL) NOPASSWD: /usr/bin/pacman
+          mode: '0440'
+
     - name: Install repo packages
       community.general.pacman:
         name: "{{ pacman_packages }}"
