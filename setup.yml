@@ -177,7 +177,7 @@
 
     - name: Check if dotfiles are already managed by chezmoi
       ansible.builtin.stat:
-        path: "{{ ansible_user_dir }}/.local/share/chezmoi"
+        path: "{{ ansible_env.HOME }}/.local/share/chezmoi"
       register: chezmoi_dir
       become: false
 
@@ -185,7 +185,7 @@
       ansible.builtin.command:
         # This command initializes, applies, and exits. Perfect for automation.
         cmd: "chezmoi init --apply --one-shot https://github.com/NightmaresOfTheEnd/dotfiles.git"
-        creates: "{{ ansible_user_dir }}/.local/share/chezmoi/chezmoi.toml"
+        creates: "{{ ansible_env.HOME }}/.local/share/chezmoi/chezmoi.toml"
       become: false
       when: not chezmoi_dir.stat.exists
 
