@@ -226,13 +226,25 @@
         path: "{{ lookup('env', 'HOME') }}/.local/share/chezmoi"
       register: chezmoi_dir
       become: false
+      tags: dotfiles  # <-- Add this tag
 
-    - name: Initialize and apply dotfiles with chezmoi
+    - name: Initialize and apply dotfiles with chezmoi (if new)
       ansible.builtin.command:
-        cmd: "chezmoi init --apply https://github.com/NightmaresOfTheEnd/dotfiles.git" # --one-shot removes repo after configuration
+        cmd: "chezmoi init --apply https://github.com/NightmaresOfTheEnd/dotfiles.git"
         chdir: "{{ lookup('env', 'HOME') }}"
       become: false
-      when: not chezmoi_dir.stat.exists
+      when: not chezmoi_dir.stat.exists  # Only run if not initialized
+      tags: dotfiles
+
+    - name: Update dotfiles with chezmoi (if existing)
+      ansible.builtin.command:
+        cmd: "chezmoi update -v"
+        chdir: "{{ lookup('env', 'HOME') }}"
+      become: false
+      when: chezmoi_dir.stat.exists   # Only run if already initialized
+      register: chezmoi_update
+      changed_when: "'applied' in chezmoi_update.stdout"
+      tags: dotfiles
 
     - name: Enable & start services
       ansible.builtin.service:
