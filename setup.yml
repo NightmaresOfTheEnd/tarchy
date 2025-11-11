@@ -208,6 +208,18 @@
         state: absent
       become: false
 
+    - name: Clone Oh My Zsh repository
+      ansible.builtin.git:
+        repo: https://github.com/ohmyzsh/ohmyzsh.git
+        dest: "{{ lookup('env', 'HOME') }}/.oh-my-zsh"
+        depth: 1               # Faster clone, no history
+        version: main
+        single_branch: yes
+      become: false            # This must be run as your user
+      tags:
+        - oh-my-zsh
+        - dotfiles
+
     - name: Check if dotfiles are already managed by chezmoi
       ansible.builtin.stat:
         path: "{{ lookup('env', 'HOME') }}/.local/share/chezmoi"
