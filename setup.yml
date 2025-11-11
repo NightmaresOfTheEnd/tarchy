@@ -11,6 +11,7 @@
   vars:
     pacman_packages:
       - git
+      - github-cli
       - chezmoi
       - curl
       - wget
@@ -216,7 +217,7 @@
 
     - name: Initialize and apply dotfiles with chezmoi
       ansible.builtin.command:
-        cmd: "chezmoi init --apply --one-shot https://github.com/NightmaresOfTheEnd/dotfiles.git"
+        cmd: "chezmoi init --apply https://github.com/NightmaresOfTheEnd/dotfiles.git" # --one-shot removes repo after configuration
         chdir: "{{ lookup('env', 'HOME') }}"
       become: false
       when: not chezmoi_dir.stat.exists
