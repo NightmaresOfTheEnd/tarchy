@@ -10,8 +10,6 @@
 
   vars:
     pacman_packages:
-      - base-devel # <-- Removed, handled in pre_tasks
-      - reflector # <-- Removed, handled in pre_tasks
       - git
       - chezmoi
       - curl
@@ -174,6 +172,35 @@
         state: present
         method: system
       loop: "{{ flatpak_apps | default([]) }}"
+
+    - name: Ensure wallpaper directory exists
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/Pictures/wallpapers"
+        state: directory
+        mode: '0755'
+      become: false
+
+    - name: Clone tarchy repo to a temp location
+      ansible.builtin.git:
+        repo: https://github.com/NightmaresOfTheEnd/tarchy.git
+        dest: /tmp/tarchy
+        depth: 1         # Faster clone, no history
+        version: main
+        single_branch: yes
+      become: false
+
+    - name: Copy *only* the wallpaper files to destination
+      ansible.builtin.copy:
+        src: /tmp/tarchy/files/wallpaper/  # Note the trailing /
+        dest: "{{ lookup('env', 'HOME') }}/Pictures/wallpapers/"
+        remote_src: true  # This is a remote-to-remote copy
+      become: false
+
+    - name: Clean up temporary repo clone
+      ansible.builtin.file:
+        path: /tmp/tarchy
+        state: absent
+      become: false
 
     - name: Check if dotfiles are already managed by chezmoi
       ansible.builtin.stat:
