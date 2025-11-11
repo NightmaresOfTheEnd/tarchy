@@ -172,6 +172,12 @@
         state: present
         method: system
       loop: "{{ flatpak_apps | default([]) }}"
+      
+    - name: Change default shell to Zsh for the ansible user
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        shell: /bin/zsh
+      become: true
 
     - name: Ensure wallpaper directory exists
       ansible.builtin.file:
