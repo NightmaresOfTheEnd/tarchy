@@ -236,6 +236,26 @@
       ansible.builtin.set_fact:
         detected_packages: "{{ detected_packages + filtered_distro_packages }}"
 
+    # ----------------------
+    # Optimization: linux-zen + zram + power + earlyoom
+    # ----------------------
+    - name: Add linux-zen and optimization tools to package plan
+      ansible.builtin.set_fact:
+        detected_packages: >-
+          {{ detected_packages
+             + ['linux-zen','linux-zen-headers','systemd-zram-generator','earlyoom','power-profiles-daemon'] }}
+
+    - name: Add auto-cpufreq on laptops
+      ansible.builtin.set_fact:
+        detected_packages: "{{ detected_packages + ['auto-cpufreq'] }}"
+        detected_services: "{{ detected_services + ['auto-cpufreq'] }}"
+      when: bat0.stat.exists
+
+    - name: Register optimization services (EarlyOOM + power-profiles)
+      ansible.builtin.set_fact:
+        detected_services: "{{ (detected_services + ['earlyoom','power-profiles-daemon']) | unique }}"
+
+
   tasks:
     - name: Refresh pacman mirrors with reflector (Arch family)
       ansible.builtin.command: >
@@ -350,6 +370,38 @@
       changed_when: "'applied' in chezmoi_update.stdout"
       tags: [dotfiles]
 
+    # --- ZRAM config (ram/2, zstd). Handler starts the swap unit.
+    - name: Configure ZRAM generator
+      ansible.builtin.copy:
+        dest: /etc/systemd/zram-generator.conf
+        mode: '0644'
+        content: |
+          [zram0]
+          zram-size = ram / 2
+          compression-algorithm = zstd
+      notify: Restart zram
+
+    # --- I/O scheduler rules: mq-deadline (NVMe) / bfq (SATA/HDD)
+    - name: Set I/O scheduler defaults
+      ansible.builtin.copy:
+        dest: /etc/udev/rules.d/60-iosched.rules
+        mode: '0644'
+        content: |
+          ACTION=="add|change", KERNEL=="nvme*", ATTR{queue/scheduler}="mq-deadline"
+          ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/scheduler}="bfq"
+      notify: Reload udev
+
+    # --- TCP BBR for better latency/throughput
+    - name: Enable TCP BBR
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/90-bbr.conf
+        mode: '0644'
+        content: |
+          net.ipv4.tcp_congestion_control = bbr
+          net.core.default_qdisc = fq
+      notify: Apply sysctl
+
+    # -----------------------------------------------------
     # Enable baseline services + any hardware-detected services (e.g., tlp)
     - name: Enable & start services
       ansible.builtin.service:
@@ -384,3 +436,20 @@
           Installed {{ (pacman_packages + detected_packages) | length }} repo packages,
           {{ aur_packages | default([]) | length }} AUR packages,
           and {{ flatpak_apps | default([]) | length }} Flatpak apps.
+
+  handlers:
+    - name: Restart zram
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: dev-zram0.swap
+        enabled: true
+        state: restarted
+
+    - name: Reload udev
+      ansible.builtin.command: udevadm control --reload
+    - name: Trigger udev
+      ansible.builtin.command: udevadm trigger --subsystem-match=block
+
+    - name: Apply sysctl
+      ansible.builtin.command: sysctl --system
+
