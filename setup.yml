@@ -313,7 +313,7 @@
 
     - name: Change default shell to Zsh for the ansible user
       ansible.builtin.user:
-        name: "{{ ansible_user_id }}"
+        name: "{{ ansible_user }}"
         shell: /bin/zsh
       become: true
 
