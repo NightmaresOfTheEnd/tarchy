@@ -206,14 +206,16 @@
     # ---------------------------------------
     - name: Seed list of distro-specific packages
       ansible.builtin.set_fact:
-        distro_packages: >-
-          {% if distro_id == 'cachyos' %}
-          ['linux-cachyos','linux-cachyos-headers','cachyos-settings','rate-mirrors']
-          {% elif distro_id in ['endeavouros','endeavour','endeavourOS'|lower] %}
-          ['eos-hooks','eos-update-notifier','reflector-simple','akm']
-          {% else %}
-          []
-          {% endif %}
+        distro_packages: >
+          {{
+            ['linux-cachyos','linux-cachyos-headers','cachyos-settings','rate-mirrors']
+            if distro_id == 'cachyos'
+            else
+            ['eos-hooks','eos-update-notifier','reflector-simple','akm']
+            if distro_id in ['endeavouros', 'endeavour']
+            else
+            []
+          }}
 
     - name: Create empty list to collect available distro packages
       ansible.builtin.set_fact:
