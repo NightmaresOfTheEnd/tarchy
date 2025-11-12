@@ -274,9 +274,9 @@
       become: true
       copy:
         dest: /etc/sudoers.d/11-aur
-        content: |
-          {{ ansible_user_id }} ALL=(ALL) NOPASSWD: /usr/bin/pacman
+        content: "{{ ansible_user_id }} ALL=(ALL) NOPASSWD: /usr/bin/pacman\n"
         mode: '0440'
+        validate: /usr/sbin/visudo -csf %s
 
     - name: Install repo packages (base + detected)
       community.general.pacman:
