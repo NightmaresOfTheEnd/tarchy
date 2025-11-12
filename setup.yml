@@ -61,7 +61,6 @@
       - xdg-desktop-portal
       - xdg-desktop-portal-hyprland
       - xdg-desktop-portal-gtk
-      - xdg-desktop-portal-wlr
       - hyprpaper
       - mako # Notification daemon (simple, Wayland-native)
       # - dunst # Notification daemon (powerful, scriptable)
@@ -127,11 +126,11 @@
 
   tasks:
     - name: Refresh pacman mirrors with reflector
-    ansible.builtin.command: >
-      reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
-    register: reflector_run
-    changed_when: reflector_run.rc == 0
-    when: ansible_facts['os_family'] == 'Archlinux'
+      ansible.builtin.command: >
+        reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+      register: reflector_run
+      changed_when: reflector_run.rc == 0
+      when: ansible_facts['os_family'] == 'Archlinux'
 
     - name: Allow AUR builder to run pacman without password
       become: true
