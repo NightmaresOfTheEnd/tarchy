@@ -1,4 +1,5 @@
-- name: Personal Arch setup (tiny + AUR/Flatpak)
+---
+- name: Personal Arch setup (tiny + AUR/Flatpak) with hardware/distro detection
   hosts: localhost
   connection: local
   become: true
@@ -61,8 +62,7 @@
       - xdg-desktop-portal-hyprland
       - xdg-desktop-portal-gtk
       - hyprpaper
-      - mako # Notification daemon (simple, Wayland-native)
-      # - dunst # Notification daemon (powerful, scriptable)
+      - mako
       - gtk3
       - qt5-wayland
       - qt6-wayland
@@ -71,7 +71,7 @@
       - wl-clipboard
       - waybar
       - xorg-xwayland
-        
+
       # --- Power Management ---
       - swaylock
       - swayidle
@@ -83,38 +83,46 @@
       # --- UX & Networking ---
       - network-manager-applet
       - nm-connection-editor
-      - pavucontrol # simple audio mixer
+      - pavucontrol
 
       # --- Ecosystem ---
-      - foot # Terminal
+      - foot
       - firefox
-      - thunar # Lightweight GTK file manager
-      - gvfs # Backend for Thunar (trash, mounting, etc.)
-      - polkit-gnome          # provides polkit-gnome-authentication-agent-1
+      - thunar
+      - gvfs
+      - polkit-gnome
       - polkit
       - qt5ct
       - qt6ct
 
-    aur_packages:        # edit to taste (leave as [] to avoid null)
+    # Augmented at runtime based on detection:
+    detected_packages: []
+    detected_services: []
+
+    # --- AUR/Flatpak (yours, unchanged) ---
+    aur_packages:
       - rofi-wayland
       - nwg-look
       - wlogout
 
-    flatpak_apps:           # optional
+    flatpak_apps:
       - com.discordapp.Discord
 
     services:
       - NetworkManager
       - firewalld
       - bluetooth
-      # - sshd            # uncomment if you actually want SSH enabled
+      # - sshd
 
   pre_tasks:
-    - name: Ensure base-devel and reflector present (for builds/mirror mgmt)
+    - name: Ensure base-devel, reflector, and tools for detection are present
       community.general.pacman:
         name:
           - base-devel
           - reflector
+          - pciutils        # lspci
+          - dmidecode       # hardware/filter helpers
+          - bash            # for sourcing /etc/os-release
         state: present
         update_cache: true
 
@@ -123,8 +131,113 @@
         update_cache: true
         upgrade: true
 
+    - name: Detect distro ID from /etc/os-release
+      ansible.builtin.command: bash -lc "source /etc/os-release && echo -n ${ID:-arch}"
+      register: os_release_id
+      changed_when: false
+
+    - name: Normalize distro fact
+      ansible.builtin.set_fact:
+        distro_id: "{{ (os_release_id.stdout | lower) | default('arch') }}"
+
+    - name: Detect CPU vendor (Intel/AMD)
+      ansible.builtin.set_fact:
+        cpu_vendor: >-
+          {% if (ansible_facts['processor'] | join(' ') | lower) is search('intel') %}
+          intel
+          {% elif (ansible_facts['processor'] | join(' ') | lower) is search('amd') %}
+          amd
+          {% else %}
+          unknown
+          {% endif %}
+
+    - name: Detect GPU vendor via lspci
+      ansible.builtin.shell: "lspci -nnk | grep -Ei 'vga|3d|display' || true"
+      register: lspci_gpus
+      changed_when: false
+
+    - name: Normalize GPU vendor
+      ansible.builtin.set_fact:
+        gpu_vendor: >-
+          {% set l = (lspci_gpus.stdout | lower) %}
+          {% if 'nvidia' in l %}nvidia{% elif 'amd' in l or 'ati' in l %}amd{% elif 'intel' in l %}intel{% else %}unknown{% endif %}
+
+    - name: Detect if this is a laptop (battery present)
+      ansible.builtin.stat:
+        path: /sys/class/power_supply/BAT0
+      register: bat0
+
+    # ----------------------
+    # Build dynamic packages
+    # ----------------------
+    - name: Add CPU microcode package
+      ansible.builtin.set_fact:
+        detected_packages: "{{ detected_packages + ['intel-ucode'] }}"
+      when: cpu_vendor == 'intel'
+
+    - name: Add CPU microcode package (AMD)
+      ansible.builtin.set_fact:
+        detected_packages: "{{ detected_packages + ['amd-ucode'] }}"
+      when: cpu_vendor == 'amd'
+
+    - name: Add GPU stack (NVIDIA)
+      ansible.builtin.set_fact:
+        detected_packages: "{{ detected_packages + ['nvidia-dkms','nvidia-utils','vulkan-icd-loader'] }}"
+      when: gpu_vendor == 'nvidia'
+
+    - name: Add GPU stack (AMD)
+      ansible.builtin.set_fact:
+        detected_packages: "{{ detected_packages + ['mesa','mesa-utils','libva-mesa-driver','vulkan-radeon','vulkan-tools'] }}"
+      when: gpu_vendor == 'amd'
+
+    - name: Add GPU stack (Intel)
+      ansible.builtin.set_fact:
+        detected_packages: "{{ detected_packages + ['mesa','mesa-utils','intel-media-driver','vulkan-intel','vulkan-tools'] }}"
+      when: gpu_vendor == 'intel'
+
+    - name: Add laptop power management (tlp) when battery exists
+      ansible.builtin.set_fact:
+        detected_packages: "{{ detected_packages + ['tlp','tlp-rdw','acpi_call'] }}"
+        detected_services: "{{ detected_services + ['tlp'] }}"
+      when: bat0.stat.exists
+
+    # ---------------------------------------
+    # Distro-specific sets (installed if real)
+    # ---------------------------------------
+    - name: Seed list of distro-specific packages
+      ansible.builtin.set_fact:
+        distro_packages: >-
+          {% if distro_id == 'cachyos' %}
+          ['linux-cachyos','linux-cachyos-headers','cachyos-settings','rate-mirrors']
+          {% elif distro_id in ['endeavouros','endeavour','endeavourOS'|lower] %}
+          ['eos-hooks','eos-update-notifier','reflector-simple','akm']
+          {% else %}
+          []
+          {% endif %}
+
+    - name: Create empty list to collect available distro packages
+      ansible.builtin.set_fact:
+        filtered_distro_packages: []
+
+    - name: Keep only packages that actually exist on this system (safe install)
+      ansible.builtin.shell: "pacman -Si {{ item }} >/dev/null 2>&1"
+      loop: "{{ distro_packages }}"
+      register: pkg_checks
+      failed_when: false
+      changed_when: false
+
+    - name: Accumulate only available distro packages
+      ansible.builtin.set_fact:
+        filtered_distro_packages: "{{ filtered_distro_packages + [ item.item ] }}"
+      loop: "{{ pkg_checks.results }}"
+      when: item.rc == 0
+
+    - name: Merge detected and filtered distro packages
+      ansible.builtin.set_fact:
+        detected_packages: "{{ detected_packages + filtered_distro_packages }}"
+
   tasks:
-    - name: Refresh pacman mirrors with reflector
+    - name: Refresh pacman mirrors with reflector (Arch family)
       ansible.builtin.command: >
         reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
       register: reflector_run
@@ -139,9 +252,9 @@
           {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman
         mode: '0440'
 
-    - name: Install repo packages
+    - name: Install repo packages (base + detected)
       community.general.pacman:
-        name: "{{ pacman_packages }}"
+        name: "{{ pacman_packages + detected_packages }}"
         state: present
 
     - name: Install yay (bootstrap with makepkg if missing)
@@ -172,7 +285,7 @@
         state: present
         method: system
       loop: "{{ flatpak_apps | default([]) }}"
-      
+
     - name: Change default shell to Zsh for the ansible user
       ansible.builtin.user:
         name: "{{ ansible_user }}"
@@ -189,7 +302,7 @@
     - name: Get wallpaper list from GitHub API
       ansible.builtin.uri:
         url: https://api.github.com/repos/NightmaresOfTheEnd/tarchy/contents/files/wallpaper
-        return_content: true # This makes sure we get the JSON response
+        return_content: true
       register: api_response
       become: false
 
@@ -198,53 +311,52 @@
         url: "{{ item.download_url }}"
         dest: "{{ lookup('env', 'HOME') }}/Pictures/wallpapers/{{ item.name }}"
         mode: '0644'
-      loop: "{{ api_response.json }}" # Loop over the JSON list from the API
-      when: item.type == 'file' # Ensure we only try to download files
+      loop: "{{ api_response.json }}"
+      when: item.type == 'file'
       become: false
 
     - name: Clone Oh My Zsh repository
       ansible.builtin.git:
         repo: https://github.com/ohmyzsh/ohmyzsh.git
         dest: "{{ lookup('env', 'HOME') }}/.oh-my-zsh"
-        depth: 1               # Faster clone, no history
+        depth: 1
         version: main
         single_branch: yes
-      become: false            # This must be run as your user
-      tags:
-        - oh-my-zsh
-        - dotfiles
+      become: false
+      tags: [oh-my-zsh, dotfiles]
 
     - name: Check if dotfiles are already managed by chezmoi
       ansible.builtin.stat:
         path: "{{ lookup('env', 'HOME') }}/.local/share/chezmoi"
       register: chezmoi_dir
       become: false
-      tags: dotfiles  # <-- Add this tag
+      tags: [dotfiles]
 
     - name: Initialize and apply dotfiles with chezmoi (if new)
       ansible.builtin.command:
         cmd: "chezmoi init --apply https://github.com/NightmaresOfTheEnd/dotfiles.git"
         chdir: "{{ lookup('env', 'HOME') }}"
       become: false
-      when: not chezmoi_dir.stat.exists  # Only run if not initialized
-      tags: dotfiles
+      when: not chezmoi_dir.stat.exists
+      tags: [dotfiles]
 
     - name: Update dotfiles with chezmoi (if existing)
       ansible.builtin.command:
         cmd: "chezmoi update -v"
         chdir: "{{ lookup('env', 'HOME') }}"
       become: false
-      when: chezmoi_dir.stat.exists   # Only run if already initialized
+      when: chezmoi_dir.stat.exists
       register: chezmoi_update
       changed_when: "'applied' in chezmoi_update.stdout"
-      tags: dotfiles
+      tags: [dotfiles]
 
+    # Enable baseline services + any hardware-detected services (e.g., tlp)
     - name: Enable & start services
       ansible.builtin.service:
         name: "{{ item }}"
         enabled: true
         state: started
-      loop: "{{ services }}"
+      loop: "{{ services + detected_services | unique }}"
 
     - name: Configure greetd (Hyprland session)
       ansible.builtin.copy:
@@ -267,6 +379,8 @@
     - name: Display completion summary
       ansible.builtin.debug:
         msg: >
-          Setup complete! Installed {{ pacman_packages | length }} repo packages,
-          {{ aur_packages | default([]) | length }} AUR packages, and
-          {{ flatpak_apps | default([]) | length }} Flatpak apps.
+          Setup complete! Distro={{ distro_id }}, CPU={{ cpu_vendor }}, GPU={{ gpu_vendor }},
+          Laptop={{ bat0.stat.exists | ternary('yes','no') }}.
+          Installed {{ (pacman_packages + detected_packages) | length }} repo packages,
+          {{ aur_packages | default([]) | length }} AUR packages,
+          and {{ flatpak_apps | default([]) | length }} Flatpak apps.
