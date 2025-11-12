@@ -245,7 +245,7 @@
       ansible.builtin.set_fact:
         detected_packages: >-
           {{ detected_packages
-             + ['linux-zen','linux-zen-headers','systemd-zram-generator','earlyoom'] }}
+             + ['linux-zen','linux-zen-headers','zram-generator','earlyoom'] }}
 
     - name: Add auto-cpufreq on laptops (ONLY if TLP is not used)
       ansible.builtin.set_fact:
