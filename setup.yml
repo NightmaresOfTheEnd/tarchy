@@ -1,4 +1,4 @@
-- name: Personal EndeavourOS setup (tiny + AUR/Flatpak)
+- name: Personal Arch setup (tiny + AUR/Flatpak)
   hosts: localhost
   connection: local
   become: true
@@ -60,6 +60,8 @@
       - wayland-protocols
       - xdg-desktop-portal
       - xdg-desktop-portal-hyprland
+      - xdg-desktop-portal-gtk
+      - xdg-desktop-portal-wlr
       - hyprpaper
       - mako # Notification daemon (simple, Wayland-native)
       # - dunst # Notification daemon (powerful, scriptable)
@@ -71,7 +73,6 @@
       - wl-clipboard
       - waybar
       - xorg-xwayland
-      - xdg-desktop-portal-gtk
         
       # --- Power Management ---
       - swaylock
@@ -84,13 +85,14 @@
       # --- UX & Networking ---
       - network-manager-applet
       - nm-connection-editor
+      - pavucontrol # simple audio mixer
 
       # --- Ecosystem ---
       - foot # Terminal
       - firefox
       - thunar # Lightweight GTK file manager
       - gvfs # Backend for Thunar (trash, mounting, etc.)
-      - polkit-kde-agent # Authentication Agent
+      - polkit-gnome          # provides polkit-gnome-authentication-agent-1
       - polkit
       - qt5ct
       - qt6ct
@@ -124,13 +126,12 @@
         upgrade: true
 
   tasks:
-    # Optional: refresh Arch mirrors using reflector (fastest recent)
     - name: Refresh pacman mirrors with reflector
-      ansible.builtin.command: >
-        reflector --latest 20 --sort rate
-        --save /etc/pacman.d/mirrorlist
-      register: reflector_run
-      changed_when: reflector_run.rc == 0
+    ansible.builtin.command: >
+      reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+    register: reflector_run
+    changed_when: reflector_run.rc == 0
+    when: ansible_facts['os_family'] == 'Archlinux'
 
     - name: Allow AUR builder to run pacman without password
       become: true
