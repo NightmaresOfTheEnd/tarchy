@@ -26,7 +26,6 @@
       - openssh
       - firewalld
       - flatpak
-      - sudo
       - man-db
       - man-pages
       - rsync
@@ -187,26 +186,20 @@
         mode: '0755'
       become: false
 
-    - name: Clone tarchy repo to a temp location
-      ansible.builtin.git:
-        repo: https://github.com/NightmaresOfTheEnd/tarchy.git
-        dest: /tmp/tarchy
-        depth: 1         # Faster clone, no history
-        version: main
-        single_branch: yes
+    - name: Get wallpaper list from GitHub API
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/NightmaresOfTheEnd/tarchy/contents/files/wallpaper
+        return_content: true # This makes sure we get the JSON response
+      register: api_response
       become: false
 
-    - name: Copy *only* the wallpaper files to destination
-      ansible.builtin.copy:
-        src: /tmp/tarchy/files/wallpaper/  # Note the trailing /
-        dest: "{{ lookup('env', 'HOME') }}/Pictures/wallpapers/"
-        remote_src: true  # This is a remote-to-remote copy
-      become: false
-
-    - name: Clean up temporary repo clone
-      ansible.builtin.file:
-        path: /tmp/tarchy
-        state: absent
+    - name: Download all wallpapers from the list
+      ansible.builtin.get_url:
+        url: "{{ item.download_url }}"
+        dest: "{{ lookup('env', 'HOME') }}/Pictures/wallpapers/{{ item.name }}"
+        mode: '0644'
+      loop: "{{ api_response.json }}" # Loop over the JSON list from the API
+      when: item.type == 'file' # Ensure we only try to download files
       become: false
 
     - name: Clone Oh My Zsh repository
