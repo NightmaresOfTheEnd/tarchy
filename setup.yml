@@ -274,7 +274,7 @@
       become: true
       copy:
         dest: /etc/sudoers.d/11-aur
-        content: "{{ ansible_user_id }} ALL=(ALL) NOPASSWD: /usr/bin/pacman\n"
+        content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman\n"
         mode: '0440'
 
     - name: Install repo packages (base + detected)
