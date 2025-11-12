@@ -345,10 +345,9 @@
         repo: https://github.com/ohmyzsh/ohmyzsh.git
         dest: "{{ lookup('env', 'HOME') }}/.oh-my-zsh"
         depth: 1
-        version: main
+        version: master # <--- This is the fix
         single_branch: yes
       become: false
-      tags: [oh-my-zsh, dotfiles]
 
     - name: Check if dotfiles are already managed by chezmoi
       ansible.builtin.stat:
