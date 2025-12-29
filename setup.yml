@@ -24,8 +24,7 @@
       - unzip
       - unrar
       - fastfetch
-      - openssh
-      - firewalld
+      - ufw
       - flatpak
       - man-db
       - man-pages
@@ -99,6 +98,9 @@
     detected_packages: []
     detected_services: []
 
+    # Laptop power management: 'tlp' (comprehensive) or 'auto-cpufreq' (simpler, auto-tuning)
+    laptop_power_manager: tlp
+
     # --- AUR/Flatpak (yours, unchanged) ---
     aur_packages:
       - rofi-wayland
@@ -110,9 +112,8 @@
 
     services:
       - NetworkManager
-      - firewalld
+      - ufw
       - bluetooth
-      # - sshd
 
   pre_tasks:
     - name: Ensure base-devel, reflector, and tools for detection are present
@@ -156,16 +157,22 @@
       register: lspci_gpus
       changed_when: false
 
-    - name: Normalize GPU vendor
+    - name: Detect all GPU vendors (supports hybrid setups)
       ansible.builtin.set_fact:
-        gpu_vendor: >-
+        gpu_vendors: >-
           {% set l = (lspci_gpus.stdout | lower) %}
-          {% if 'nvidia' in l %}nvidia{% elif 'amd' in l or 'ati' in l %}amd{% elif 'intel' in l %}intel{% else %}unknown{% endif %}
+          {% set vendors = [] %}
+          {% if 'nvidia' in l %}{% set _ = vendors.append('nvidia') %}{% endif %}
+          {% if 'amd' in l or 'ati' in l %}{% set _ = vendors.append('amd') %}{% endif %}
+          {% if 'intel' in l %}{% set _ = vendors.append('intel') %}{% endif %}
+          {{ vendors if vendors else ['unknown'] }}
 
-    - name: Detect if this is a laptop (battery present)
-      ansible.builtin.stat:
-        path: /sys/class/power_supply/BAT0
-      register: bat0
+    - name: Detect if this is a laptop (any battery present)
+      ansible.builtin.find:
+        paths: /sys/class/power_supply/
+        patterns: 'BAT*,battery,BATT'
+        file_type: directory
+      register: laptop_batteries
 
     # ----------------------
     # Build dynamic packages
@@ -182,24 +189,30 @@
 
     - name: Add GPU stack (NVIDIA)
       ansible.builtin.set_fact:
-        detected_packages: "{{ detected_packages + ['nvidia-dkms','nvidia-utils','vulkan-icd-loader'] }}"
-      when: gpu_vendor == 'nvidia'
+        detected_packages: "{{ detected_packages + ['nvidia-dkms','nvidia-utils','nvidia-settings','lib32-nvidia-utils','vulkan-icd-loader'] }}"
+      when: "'nvidia' in gpu_vendors"
 
     - name: Add GPU stack (AMD)
       ansible.builtin.set_fact:
         detected_packages: "{{ detected_packages + ['mesa','mesa-utils','libva-mesa-driver','vulkan-radeon','vulkan-tools'] }}"
-      when: gpu_vendor == 'amd'
+      when: "'amd' in gpu_vendors"
 
     - name: Add GPU stack (Intel)
       ansible.builtin.set_fact:
         detected_packages: "{{ detected_packages + ['mesa','mesa-utils','intel-media-driver','vulkan-intel','vulkan-tools'] }}"
-      when: gpu_vendor == 'intel'
+      when: "'intel' in gpu_vendors"
 
-    - name: Add laptop power management (tlp) when battery exists
+    - name: Add laptop power management (TLP) when battery exists
       ansible.builtin.set_fact:
         detected_packages: "{{ detected_packages + ['tlp','tlp-rdw','acpi_call'] }}"
         detected_services: "{{ detected_services + ['tlp'] }}"
-      when: bat0.stat.exists
+      when: laptop_batteries.matched > 0 and laptop_power_manager == 'tlp'
+
+    - name: Add laptop power management (auto-cpufreq) when battery exists
+      ansible.builtin.set_fact:
+        detected_packages: "{{ detected_packages + ['auto-cpufreq'] }}"
+        detected_services: "{{ detected_services + ['auto-cpufreq'] }}"
+      when: laptop_batteries.matched > 0 and laptop_power_manager == 'auto-cpufreq'
 
     # ---------------------------------------
     # Distro-specific sets (installed if real)
@@ -247,28 +260,21 @@
           {{ detected_packages
              + ['linux-zen','linux-zen-headers','zram-generator','earlyoom'] }}
 
-    - name: Add auto-cpufreq on laptops (ONLY if TLP is not used)
-      ansible.builtin.set_fact:
-        detected_packages: "{{ detected_packages + ['auto-cpufreq'] }}"
-        detected_services: "{{ detected_services + ['auto-cpufreq'] }}"
-      when: bat0.stat.exists and 'tlp' not in detected_packages
-
-    - name: Register optimization services (EarlyOOM + power-profiles)
+    - name: Register optimization services (EarlyOOM)
       ansible.builtin.set_fact:
         detected_services: "{{ (detected_services + ['earlyoom']) | unique }}"
 
-    - name: Add power-profiles-daemon (if NOT using TLP)
+    - name: Add power-profiles-daemon (desktops or non-TLP laptops)
       ansible.builtin.set_fact:
         detected_packages: "{{ detected_packages + ['power-profiles-daemon'] }}"
         detected_services: "{{ detected_services + ['power-profiles-daemon'] }}"
-      when: "'tlp' not in detected_packages"
+      when: laptop_batteries.matched == 0 or laptop_power_manager != 'tlp'
 
   tasks:
     - name: Refresh pacman mirrors with reflector (Arch family)
       ansible.builtin.command: >
         reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
-      register: reflector_run
-      changed_when: reflector_run.rc == 0
+      changed_when: false
 
     - name: Allow AUR builder to run pacman without password
       become: true
@@ -426,17 +432,16 @@
           command = "tuigreet --time --remember --cmd Hyprland"
           user = "greeter"
 
-    - name: Enable greetd
+    - name: Enable greetd (starts on next boot to avoid interrupting playbook)
       ansible.builtin.service:
         name: greetd
         enabled: true
-        state: started
 
     - name: Display completion summary
       ansible.builtin.debug:
         msg: >
-          Setup complete! Distro={{ distro_id }}, CPU={{ cpu_vendor }}, GPU={{ gpu_vendor }},
-          Laptop={{ bat0.stat.exists | ternary('yes','no') }}.
+          Setup complete! Distro={{ distro_id }}, CPU={{ cpu_vendor }}, GPU={{ gpu_vendors | join('+') }},
+          Laptop={{ (laptop_batteries.matched > 0) | ternary('yes','no') }}.
           Installed {{ (pacman_packages + detected_packages) | length }} repo packages,
           {{ aur_packages | default([]) | length }} AUR packages,
           and {{ flatpak_apps | default([]) | length }} Flatpak apps.
@@ -451,6 +456,8 @@
 
     - name: Reload udev
       ansible.builtin.command: udevadm control --reload
+      notify: Trigger udev
+
     - name: Trigger udev
       ansible.builtin.command: udevadm trigger --subsystem-match=block
 
