@@ -338,19 +338,32 @@
         state: present
 
     - name: Install yay (bootstrap with makepkg if missing)
-      become: false
+      become: true
+      become_user: "{{ ansible_user }}"
+      become_method: su
       kewlfft.aur.aur:
         use: makepkg
         name: yay
         state: present
+      retries: 3
+      delay: 10
+      timeout: 600
+      register: yay_install
+      until: yay_install is succeeded
 
     - name: Install AUR packages with yay
       become: true
       become_user: "{{ ansible_user }}"
+      become_method: su
       kewlfft.aur.aur:
         use: yay
         name: "{{ aur_packages | default([]) }}"
         state: present
+      retries: 3
+      delay: 10
+      timeout: 600
+      register: aur_install
+      until: aur_install is succeeded
       when: (aur_packages | default([])) | length > 0
 
     - name: Ensure Flathub remote (system-wide)
@@ -390,6 +403,7 @@
       register: api_response
       become: true
       become_user: "{{ ansible_user }}"
+      become_method: su
       retries: 3
       delay: 5
       until: api_response.status == 200
@@ -417,6 +431,7 @@
         single_branch: yes
       become: true
       become_user: "{{ ansible_user }}"
+      become_method: su
       retries: 3
       delay: 5
 
@@ -427,6 +442,7 @@
         depth: 1
       become: true
       become_user: "{{ ansible_user }}"
+      become_method: su
       retries: 3
       delay: 5
 
@@ -437,6 +453,7 @@
         depth: 1
       become: true
       become_user: "{{ ansible_user }}"
+      become_method: su
       retries: 3
       delay: 5
 
@@ -446,6 +463,7 @@
       register: chezmoi_dir
       become: true
       become_user: "{{ ansible_user }}"
+      become_method: su
       tags: [dotfiles]
 
     - name: Initialize and apply dotfiles with chezmoi (if new)
@@ -454,6 +472,7 @@
         chdir: "/home/{{ ansible_user }}"
       become: true
       become_user: "{{ ansible_user }}"
+      become_method: su
       when: not chezmoi_dir.stat.exists
       tags: [dotfiles]
 
@@ -463,6 +482,7 @@
         chdir: "/home/{{ ansible_user }}"
       become: true
       become_user: "{{ ansible_user }}"
+      become_method: su
       when: chezmoi_dir.stat.exists
       register: chezmoi_update
       changed_when: "'applied' in chezmoi_update.stdout"
