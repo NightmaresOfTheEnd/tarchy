@@ -314,23 +314,12 @@
       register: user_check
       failed_when: user_check.ansible_facts.getent_passwd[ansible_user] is not defined
 
-    - name: Allow AUR builder to run pacman sync operations without password
+    - name: Allow AUR builder to run pacman without password
       become: true
       ansible.builtin.copy:
         dest: /etc/sudoers.d/11-aur
-        # Restrict to specific pacman operations needed for AUR builds
-        # -S (sync), -U (upgrade local pkg), -R (remove) with common flags
-        content: |
-          # Temporary AUR build permissions - created by tarchy playbook
-          # Consider removing after initial setup if security is a concern
-          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -S *
-          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -Sy *
-          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -Syu *
-          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -U *
-          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -R *
-          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -Rs *
-        mode: "0440"
-        validate: "visudo -cf %s"
+        content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman\n"
+        mode: '0440'
 
     - name: Install repo packages (base + detected)
       community.general.pacman:
