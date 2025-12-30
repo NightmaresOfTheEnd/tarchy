@@ -502,9 +502,8 @@
     - name: Restart zram
       ansible.builtin.systemd:
         daemon_reload: true
-        name: dev-zram0.swap
-        enabled: true
-        state: restarted
+      # Note: dev-zram0.swap is created on boot by zram-generator
+      # Just reload systemd config; zram will be active after reboot
 
     - name: Reload udev
       ansible.builtin.command: udevadm control --reload
