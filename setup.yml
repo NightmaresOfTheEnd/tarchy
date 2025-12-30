@@ -113,6 +113,7 @@
       - imagemagick
       - python-pillow
       - jq
+      - papirus-icon-theme
 
     # Augmented at runtime based on detection:
     detected_packages: []
@@ -127,6 +128,7 @@
       - nwg-look
       - wlogout
       - python-pywal
+      - bibata-cursor-theme
 
     flatpak_apps:
       - com.discordapp.Discord
