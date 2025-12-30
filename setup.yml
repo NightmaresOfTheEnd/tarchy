@@ -338,32 +338,18 @@
         state: present
 
     - name: Install yay (bootstrap with makepkg if missing)
-      become: true
-      become_user: "{{ ansible_user }}"
-      become_method: su
+      become: false
       kewlfft.aur.aur:
         use: makepkg
         name: yay
         state: present
-      retries: 3
-      delay: 10
-      timeout: 600
-      register: yay_install
-      until: yay_install is succeeded
 
     - name: Install AUR packages with yay
-      become: true
-      become_user: "{{ ansible_user }}"
-      become_method: su
+      become: false
       kewlfft.aur.aur:
         use: yay
         name: "{{ aur_packages | default([]) }}"
         state: present
-      retries: 3
-      delay: 10
-      timeout: 600
-      register: aur_install
-      until: aur_install is succeeded
       when: (aur_packages | default([])) | length > 0
 
     - name: Ensure Flathub remote (system-wide)
@@ -388,101 +374,70 @@
 
     - name: Ensure wallpaper directory exists
       ansible.builtin.file:
-        path: "/home/{{ ansible_user }}/Pictures/wallpapers"
+        path: "{{ lookup('env', 'HOME') }}/Pictures/wallpapers"
         state: directory
-        mode: "0755"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-      become: true
+        mode: '0755'
+      become: false
 
     - name: Get wallpaper list from GitHub API
       ansible.builtin.uri:
         url: https://api.github.com/repos/NightmaresOfTheEnd/tarchy/contents/files/wallpaper
         return_content: true
-        timeout: 30
       register: api_response
-      become: true
-      become_user: "{{ ansible_user }}"
-      become_method: su
-      retries: 3
-      delay: 5
-      until: api_response.status == 200
+      become: false
 
     - name: Download all wallpapers from the list
       ansible.builtin.get_url:
         url: "{{ item.download_url }}"
-        dest: "/home/{{ ansible_user }}/Pictures/wallpapers/{{ item.name }}"
-        mode: "0644"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        timeout: 60
+        dest: "{{ lookup('env', 'HOME') }}/Pictures/wallpapers/{{ item.name }}"
+        mode: '0644'
       loop: "{{ api_response.json }}"
       when: item.type == 'file'
-      become: true
-      retries: 3
-      delay: 5
+      become: false
 
     - name: Clone Oh My Zsh repository
       ansible.builtin.git:
         repo: https://github.com/ohmyzsh/ohmyzsh.git
-        dest: "/home/{{ ansible_user }}/.oh-my-zsh"
+        dest: "{{ lookup('env', 'HOME') }}/.oh-my-zsh"
         depth: 1
         version: master
         single_branch: yes
-      become: true
-      become_user: "{{ ansible_user }}"
-      become_method: su
-      retries: 3
-      delay: 5
+      become: false
 
     - name: Install zsh-autosuggestions plugin
       ansible.builtin.git:
         repo: https://github.com/zsh-users/zsh-autosuggestions.git
-        dest: "/home/{{ ansible_user }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+        dest: "{{ lookup('env', 'HOME') }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
         depth: 1
-      become: true
-      become_user: "{{ ansible_user }}"
-      become_method: su
-      retries: 3
-      delay: 5
+      become: false
 
     - name: Install zsh-syntax-highlighting plugin
       ansible.builtin.git:
         repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
-        dest: "/home/{{ ansible_user }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+        dest: "{{ lookup('env', 'HOME') }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
         depth: 1
-      become: true
-      become_user: "{{ ansible_user }}"
-      become_method: su
-      retries: 3
-      delay: 5
+      become: false
 
     - name: Check if dotfiles are already managed by chezmoi
       ansible.builtin.stat:
-        path: "/home/{{ ansible_user }}/.local/share/chezmoi"
+        path: "{{ lookup('env', 'HOME') }}/.local/share/chezmoi"
       register: chezmoi_dir
-      become: true
-      become_user: "{{ ansible_user }}"
-      become_method: su
+      become: false
       tags: [dotfiles]
 
     - name: Initialize and apply dotfiles with chezmoi (if new)
       ansible.builtin.command:
         cmd: "chezmoi init --apply {{ dotfiles_repo }}"
-        chdir: "/home/{{ ansible_user }}"
-      become: true
-      become_user: "{{ ansible_user }}"
-      become_method: su
+        chdir: "{{ lookup('env', 'HOME') }}"
+      become: false
       when: not chezmoi_dir.stat.exists
       tags: [dotfiles]
 
     - name: Update dotfiles with chezmoi (if existing)
       ansible.builtin.command:
         cmd: "chezmoi update -v"
-        chdir: "/home/{{ ansible_user }}"
-      become: true
-      become_user: "{{ ansible_user }}"
-      become_method: su
+        chdir: "{{ lookup('env', 'HOME') }}"
+      become: false
       when: chezmoi_dir.stat.exists
       register: chezmoi_update
       changed_when: "'applied' in chezmoi_update.stdout"
