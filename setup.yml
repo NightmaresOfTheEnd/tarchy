@@ -13,6 +13,9 @@
     # Target user - defaults to current user, override with -e ansible_user=username
     ansible_user: "{{ lookup('env', 'USER') }}"
 
+    # Dotfiles repository - override with -e dotfiles_repo=https://github.com/user/dotfiles.git
+    dotfiles_repo: "https://github.com/NightmaresOfTheEnd/dotfiles.git"
+
     pacman_packages:
       - git
       - github-cli
@@ -304,12 +307,30 @@
         reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
       changed_when: false
 
-    - name: Allow AUR builder to run pacman without password
+    - name: Validate ansible_user exists on system
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ ansible_user }}"
+      register: user_check
+      failed_when: user_check.ansible_facts.getent_passwd[ansible_user] is not defined
+
+    - name: Allow AUR builder to run pacman sync operations without password
       become: true
-      copy:
+      ansible.builtin.copy:
         dest: /etc/sudoers.d/11-aur
-        content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman\n"
+        # Restrict to specific pacman operations needed for AUR builds
+        # -S (sync), -U (upgrade local pkg), -R (remove) with common flags
+        content: |
+          # Temporary AUR build permissions - created by tarchy playbook
+          # Consider removing after initial setup if security is a concern
+          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -S *
+          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -Sy *
+          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -Syu *
+          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -U *
+          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -R *
+          {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -Rs *
         mode: '0440'
+        validate: 'visudo -cf %s'
 
     - name: Install repo packages (base + detected)
       community.general.pacman:
@@ -419,7 +440,7 @@
 
     - name: Initialize and apply dotfiles with chezmoi (if new)
       ansible.builtin.command:
-        cmd: "chezmoi init --apply https://github.com/NightmaresOfTheEnd/dotfiles.git"
+        cmd: "chezmoi init --apply {{ dotfiles_repo }}"
         chdir: "{{ lookup('env', 'HOME') }}"
       become: false
       when: not chezmoi_dir.stat.exists
