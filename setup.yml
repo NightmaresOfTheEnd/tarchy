@@ -152,9 +152,9 @@
         name:
           - base-devel
           - reflector
-          - pciutils        # lspci
-          - dmidecode       # hardware/filter helpers
-          - bash            # for sourcing /etc/os-release
+          - pciutils # lspci
+          - dmidecode # hardware/filter helpers
+          - bash # for sourcing /etc/os-release
         state: present
         update_cache: true
 
@@ -201,7 +201,7 @@
     - name: Detect if this is a laptop (any battery present)
       ansible.builtin.find:
         paths: /sys/class/power_supply/
-        patterns: 'BAT*,battery,BATT'
+        patterns: "BAT*,battery,BATT"
         file_type: directory
       register: laptop_batteries
 
@@ -329,8 +329,8 @@
           {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -U *
           {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -R *
           {{ ansible_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman -Rs *
-        mode: '0440'
-        validate: 'visudo -cf %s'
+        mode: "0440"
+        validate: "visudo -cf %s"
 
     - name: Install repo packages (base + detected)
       community.general.pacman:
@@ -338,8 +338,7 @@
         state: present
 
     - name: Install yay (bootstrap with makepkg if missing)
-      become: true
-      become_user: "{{ ansible_user }}"
+      become: false
       kewlfft.aur.aur:
         use: makepkg
         name: yay
@@ -378,7 +377,7 @@
       ansible.builtin.file:
         path: "/home/{{ ansible_user }}/Pictures/wallpapers"
         state: directory
-        mode: '0755'
+        mode: "0755"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
       become: true
@@ -399,7 +398,7 @@
       ansible.builtin.get_url:
         url: "{{ item.download_url }}"
         dest: "/home/{{ ansible_user }}/Pictures/wallpapers/{{ item.name }}"
-        mode: '0644'
+        mode: "0644"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         timeout: 60
@@ -473,7 +472,7 @@
     - name: Configure ZRAM generator
       ansible.builtin.copy:
         dest: /etc/systemd/zram-generator.conf
-        mode: '0644'
+        mode: "0644"
         content: |
           [zram0]
           zram-size = ram / 2
@@ -484,7 +483,7 @@
     - name: Set I/O scheduler defaults
       ansible.builtin.copy:
         dest: /etc/udev/rules.d/60-iosched.rules
-        mode: '0644'
+        mode: "0644"
         content: |
           ACTION=="add|change", KERNEL=="nvme*", ATTR{queue/scheduler}="mq-deadline"
           ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/scheduler}="bfq"
@@ -494,7 +493,7 @@
     - name: Enable TCP BBR
       ansible.builtin.copy:
         dest: /etc/sysctl.d/90-bbr.conf
-        mode: '0644'
+        mode: "0644"
         content: |
           net.ipv4.tcp_congestion_control = bbr
           net.core.default_qdisc = fq
@@ -512,7 +511,7 @@
     - name: Configure greetd (Hyprland session)
       ansible.builtin.copy:
         dest: /etc/greetd/config.toml
-        mode: '0644'
+        mode: "0644"
         content: |
           [terminal]
           vt = 1
@@ -552,4 +551,3 @@
 
     - name: Apply sysctl
       ansible.builtin.command: sysctl --system
-
