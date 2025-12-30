@@ -115,6 +115,11 @@
       - jq
       - papirus-icon-theme
 
+      # --- Media & Utilities ---
+      - playerctl
+      - xdg-utils
+      - ttf-nerd-fonts-symbols
+
     # Augmented at runtime based on detection:
     detected_packages: []
     detected_services: []
