@@ -9,12 +9,12 @@ USER=`whoami`
 # Theme Elements
 prompt='Root'
 mesg='Run Applications As Root'
-term="alacritty --class alacritty-float,alacritty-float --config-file /home/$USER/.config/hypr/alacritty/alacritty.toml"
+term="foot --app-id foot-float"
 
 # Options
 layout=`cat ${RASI} | grep 'USE_ICON' | cut -d'=' -f2`
 if [[ "$layout" == 'NO' ]]; then
-	option_1=' Alacritty'
+	option_1=' Foot'
 	option_2=' Thunar'
 	option_3=' Geany'
 	option_4=' Ranger'

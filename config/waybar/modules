@@ -85,19 +85,19 @@
     },
 
     "custom/lightmode": {
-         "exec": "$HOME/.config/hypr/waybar/lightmode",
+         "exec": "$HOME/.config/waybar/lightmode",
          "interval": 1,
          "format": "{}",
          "tooltip": false,
-         "on-click": "$HOME/.config/hypr/waybar/lightmode --toggle",
+         "on-click": "$HOME/.config/waybar/lightmode --toggle",
     },
 
     "custom/sunset": {
-         "exec": "$HOME/.config/hypr/waybar/sunset",
+         "exec": "$HOME/.config/waybar/sunset",
          "interval": 1,
          "format": "{}",
          "tooltip": false,
-         "on-click": "$HOME/.config/hypr/waybar/sunset --toggle",
+         "on-click": "$HOME/.config/waybar/sunset --toggle",
          "on-scroll-up": "hyprctl hyprsunset gamma +5",
          "on-scroll-down": "hyprctl hyprsunset gamma -5",
          "smooth-scrolling-threshold": 1,
@@ -132,7 +132,7 @@
            
 	// waybar-spotify
     "custom/spotify": {
-        "exec": "$HOME/.config/hypr/waybar/spotify",
+        "exec": "$HOME/.config/waybar/spotify",
         "interval": 1,
         "format": "{}",
         "tooltip": true,

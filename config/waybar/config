@@ -3,7 +3,7 @@
 // Waybar config file ---------------------------------------
 
 {
-    "include": "~/.config/hypr/waybar/modules",
+    "include": "~/.config/waybar/modules",
     "name": "main-bar", 
     "id": "main-bar", 	
     "layer": "top", 	
