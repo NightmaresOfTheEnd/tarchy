@@ -25,5 +25,5 @@
     //"modules-left": ["custom/menu", "hyprland/workspaces", "idle_inhibitor", "tray", "mpd#2", "mpd#3", "mpd#4", "mpd" ],
     "modules-left": ["custom/menu", "hyprland/submap", "cpu", "cpu#2", "memory", "memory#2", "disk", "disk#2", "tray" ],
     "modules-center": ["hyprland/workspaces"],
-    "modules-right": ["custom/sunset", "idle_inhibitor", "custom/themes", "pulseaudio", "pulseaudio#2", "backlight", "backlight#2", "battery", "battery#2", "bluetooth", "bluetooth#2", "network", "network#2", "clock", "clock#2", "custom/power"],
+    "modules-right": ["custom/animations", "custom/sunset", "idle_inhibitor", "custom/themes", "pulseaudio", "pulseaudio#2", "backlight", "backlight#2", "battery", "battery#2", "bluetooth", "bluetooth#2", "network", "network#2", "clock", "clock#2", "custom/power"],
 }

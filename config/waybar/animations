@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+## Script for toggling Hyprland animations
+
+# Vars
+DIR="$HOME/.config/hypr"
+STATE_FILE="$DIR/theme/.animations_state"
+if [[ ! -f "$STATE_FILE" ]]; then
+    echo "on" > "$STATE_FILE"
+fi
+
+# Toggle animations
+toggle_animations() {
+	if [[ $(cat "$STATE_FILE") == "on" ]]; then
+		hyprctl keyword animations:enabled false
+		echo "off" > "$STATE_FILE"
+	else
+		hyprctl keyword animations:enabled true
+		echo "on" > "$STATE_FILE"
+	fi
+}
+
+# Show info
+show_info() {
+	if [[ $(cat "$STATE_FILE") == "on" ]]; then
+		echo -e "\non"
+	else
+		echo -e "\noff"
+	fi
+}
+
+# Main
+if [[ "$1" == "--toggle" ]]; then
+	toggle_animations
+else
+	show_info
+fi

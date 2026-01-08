@@ -146,6 +146,14 @@
          "smooth-scrolling-threshold": 1,
     },
 
+    "custom/animations": {
+         "exec": "$HOME/.config/waybar/animations",
+         "interval": 1,
+         "format": "{}",
+         "tooltip": false,
+         "on-click": "$HOME/.config/waybar/animations --toggle",
+    },
+
     "custom/menu": {
          "format": "",
          "tooltip": false,
