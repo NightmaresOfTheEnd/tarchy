@@ -52,8 +52,8 @@ source_light() {
 
 ## Random Theme
 source_pywal() {
-	# Set you wallpaper directory here.
-	WALLDIR="`xdg-user-dir PICTURES`/wallpapers"
+	# Set your wallpaper directory here.
+	WALLDIR="$HOME/.config/hypr/wallpapers"
 
 	# Check for wallpapers
 	check_wallpaper() {
