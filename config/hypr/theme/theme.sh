@@ -100,12 +100,9 @@ apply_wallpaper() {
 	# Update the config file
 	sed -i -e "s|\$wallpaper =.*|\$wallpaper = $wallpaper|g" ${DIR}/hyprpaper.conf
 
-	# Unload all wallpapers first
-	hyprctl hyprpaper unload all
-
-	# Preload and set new wallpaper
-	hyprctl hyprpaper preload "$wallpaper"
-	hyprctl hyprpaper wallpaper ",$wallpaper"
+	# Restart hyprpaper to apply new wallpaper
+	pkill hyprpaper
+	hyprpaper &
 }
 
 ## Alacritty ---------------------------------
