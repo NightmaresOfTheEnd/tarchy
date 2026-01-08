@@ -17,8 +17,8 @@ if [[ ! `pidof polkit-gnome-authentication-agent-1` ]]; then
 	/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 fi
 
-# Apply themes
-~/.config/hypr/scripts/gtkthemes &
+# Apply default theme (sets wallpaper and colors)
+~/.config/hypr/theme/theme.sh --default &
 
 # Lauch notification daemon (mako)
 ~/.config/hypr/scripts/notifications &

@@ -28,10 +28,22 @@ if [[ ! -e "$CURRENT_THEME" ]]; then
 	touch "$CURRENT_THEME"
 fi
 
+## Wallpaper directory
+WALLDIR="$HOME/.config/hypr/wallpapers"
+
+## Pick random wallpaper from folder
+pick_random_wallpaper() {
+	find "$WALLDIR" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) | shuf -n 1
+}
+
 ## Default Theme
 source_default() {
 	cat ${DEFAULT_THEME} > ${CURRENT_THEME}
 	source ${CURRENT_THEME}
+	# Pick random wallpaper if default doesn't exist
+	if [[ ! -f "$wallpaper" ]]; then
+		wallpaper=$(pick_random_wallpaper)
+	fi
 	altbackground="`pastel color $background | pastel lighten 0.10 | pastel format hex`"
 	altforeground="`pastel color $foreground | pastel darken 0.30 | pastel format hex`"
 	modbackground=(`pastel gradient -n 3 $background $altbackground | pastel format hex`)
@@ -43,6 +55,10 @@ source_default() {
 source_light() {
 	cat ${LIGHT_THEME} > ${CURRENT_THEME}
 	source ${CURRENT_THEME}
+	# Pick random wallpaper if light wallpaper doesn't exist
+	if [[ ! -f "$wallpaper" ]]; then
+		wallpaper=$(pick_random_wallpaper)
+	fi
 	altbackground="`pastel color $background | pastel darken 0.12 | pastel format hex`"
 	altforeground="`pastel color $foreground | pastel lighten 0.30 | pastel format hex`"
 	modbackground=(`pastel gradient -n 3 $background $altbackground | pastel format hex`)
@@ -52,9 +68,6 @@ source_light() {
 
 ## Random Theme
 source_pywal() {
-	# Set your wallpaper directory here.
-	WALLDIR="$HOME/.config/hypr/wallpapers"
-
 	# Check for wallpapers
 	check_wallpaper() {
 		if [[ -d "$WALLDIR" ]]; then
