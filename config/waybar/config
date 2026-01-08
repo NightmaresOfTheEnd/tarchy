@@ -20,7 +20,7 @@
     "margin-left": 0, 				// Space to the left of the bar
     "margin-right": 0, 				// Space to the right of the bar
     "fixed-center": true, 			// Center modules position
-    "ipc": true, 					// Control waybar with `swaymsg bar` commands
+    "ipc": false, 					// Control waybar with `swaymsg bar` commands (Sway only, not needed for Hyprland)
 
     //"modules-left": ["custom/menu", "hyprland/workspaces", "idle_inhibitor", "tray", "mpd#2", "mpd#3", "mpd#4", "mpd" ],
     "modules-left": ["custom/menu", "hyprland/submap", "cpu", "cpu#2", "memory", "memory#2", "disk", "disk#2", "tray" ],
