@@ -8,14 +8,14 @@
 DIR="$HOME/.config/hypr"
 
 ## Directories ------------------------------
-PATH_ALAC="$DIR/alacritty"
-PATH_FOOT="$DIR/foot"
-PATH_KITY="$DIR/kitty"
-PATH_MAKO="$DIR/mako"
-PATH_ROFI="$DIR/rofi"
-PATH_WAYB="$DIR/waybar"
-PATH_WLOG="$DIR/wlogout"
-PATH_WOFI="$DIR/wofi"
+PATH_ALAC="$HOME/.config/alacritty"
+PATH_FOOT="$HOME/.config/foot"
+PATH_KITY="$HOME/.config/kitty"
+PATH_MAKO="$HOME/.config/mako"
+PATH_ROFI="$HOME/.config/rofi"
+PATH_WAYB="$HOME/.config/waybar"
+PATH_WLOG="$HOME/.config/wlogout"
+PATH_WOFI="$HOME/.config/wofi"
 
 ## Source Theme File ------------------------
 CURRENT_THEME="$DIR/theme/current.bash"

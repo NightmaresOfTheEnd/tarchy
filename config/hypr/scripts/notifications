@@ -4,7 +4,7 @@
 ##
 ## Mako -----------------------------------------------------
 
-CONFIG="$HOME/.config/hypr/mako/config"
+CONFIG="$HOME/.config/mako/config"
 
 if [[ ! `pidof mako` ]]; then
 	mako --config ${CONFIG}
