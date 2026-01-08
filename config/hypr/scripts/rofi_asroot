@@ -2,7 +2,7 @@
 
 # Import Current Theme
 DIR="$HOME/.config/hypr"
-RASI="$DIR/rofi/asroot.rasi"
+RASI="$HOME/.config/rofi/asroot.rasi"
 ASROOT="$DIR/scripts/asroot"
 USER=`whoami`
 

@@ -18,7 +18,7 @@
 
 # Import Current Theme
 DIR="$HOME/.config/hypr"
-RASI="$DIR/rofi/bluetooth.rasi"
+RASI="$HOME/.config/rofi/bluetooth.rasi"
 
 # Constants
 divider="---------"

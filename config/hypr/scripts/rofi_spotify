@@ -4,7 +4,7 @@
 
 # Import Current Theme
 DIR="$HOME/.config/hypr"
-RASI="$DIR/rofi/music.rasi"
+RASI="$HOME/.config/rofi/music.rasi"
 
 # Theme Elements
 pc_cmd='playerctl -p spotify'

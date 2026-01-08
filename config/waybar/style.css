@@ -8,15 +8,14 @@
 /** ********** Fonts ********** **/
 * {
     font-family: "JetBrains Mono", "Symbols Nerd Font", Iosevka, archcraft, sans-serif;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 /** ********** Waybar Window ********** **/
 window#waybar {
     background-color: @background;
-	color: @background;
-    border-bottom: 0px solid @background-alt1;
-	border-radius: 0px 0px 20px 20px;
+	color: @foreground;
+    border-bottom: 2px solid @background-alt1;
     transition-property: background-color;
     transition-duration: .5s;
 }
@@ -25,81 +24,75 @@ window#waybar.hidden {
     opacity: 0.5;
 }
 
-/** ********** Backlight ********** **/
-#backlight {
-	background-color: @green;
+/** ********** Custom ********** **/
+
+#custom-power, #custom-themes, #custom-lightmode {
+	color: @background;
+	border-radius: 10px;
+	margin: 6px 6px 6px 0px;
+	padding: 2px 8px 2px 8px;
 }
 
-/** ********** Battery ********** **/
-#battery {
-	background-color: @blue;
+#custom-lightmode {
+    background-color: @background-alt1;
+	color: @red;
+}
+#custom-lightmode.on {
+    background-color: @green;
+	color: @background;
 }
 
-#battery.charging {
+#custom-menu {
+	background-color: @background-alt1;
+	color: @magenta;
+	font-size: 18px;
+	border-radius: 0px 14px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	padding: 2px 8px 2px 8px;
 }
 
-#battery.plugged {
+#custom-themes {
+    background-color: @selected;
 }
 
-@keyframes blink {
-    to {
-        color: @black;
-    }
-}
-
-#battery.critical:not(.charging) {
+#custom-power {
 	background-color: @red;
-    color: @red;
-    animation-name: blink;
-    animation-duration: 0.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-}
-
-/** ********** Clock ********** **/
-#clock {
-	background-color: @yellow;
-}
-
-/** ********** CPU ********** **/
-#cpu {
-	background-color: @cyan;
-}
-
-/** ********** Memory ********** **/
-#memory {
-	background-color: @magenta;
-}
-
-/** ********** Disk ********** **/
-#disk {
-	background-color: @blue;
-}
-
-/** ***** Idle Inhibitor ***** **/
-#idle_inhibitor {
-	background-color: @green;
-}
-#idle_inhibitor.deactivated {
-	background-color: @red;
+	font-size: 16px;
 }
 
 /** ********** Sunset ********** **/
 
 #custom-sunset {
-    background-color: @background-alt2;
+    background-color: @background-alt1;
 	color: @foreground;
 	font-size: 16px;
+	border-radius: 10px;
+	margin: 6px 0px 6px 6px ;
+	padding: 4px 9px;
 }
 #custom-sunset.on {
     background-color: @yellow;
 	color: @background;
 }
 
+/** ********** Idle Inhibitor ********** **/
+#idle_inhibitor {
+	background-color: @green;
+	color: @background;
+	border-radius: 10px;
+	margin: 6px 0px 6px 6px ;
+	padding: 4px 6px;
+}
+#idle_inhibitor.deactivated {
+	background-color: @red;
+}
+
 /** ********** Tray ********** **/
 #tray {
-	background-color: @background-alt2;
+	background-color: @background-alt1;
+	border-radius: 10px;
+	margin: 6px 0px 6px 6px ;
+	padding: 4px 6px;
 }
 #tray > .passive {
     -gtk-icon-effect: dim;
@@ -124,38 +117,53 @@ window#waybar.hidden {
 }
 
 #mpd {
-	background-color: @background-alt1;
 	color: @foreground;
+	font-size: 12px;
+	font-weight: bold;
 }
-
 #mpd.disconnected {
-	background-color: @red;
-	color: @background;
+	color: @red;
 }
-
 #mpd.stopped {
-	background-color: @magenta;
-	color: @background;
+	color: @red;
 }
-
 #mpd.playing {
-    background: linear-gradient(90deg, @magenta 25%, @red 50%, @yellow 75%, @cyan 100%); 
-    background-size: 300% 300%;
-    animation: gradient 10s ease infinite;
-    color: @background;
+	color: @cyan;
+}
+#mpd.paused {
 }
 
-#mpd.paused {
+#mpd.2 {
+	border-radius: 10px 0px 0px 10px;
+	margin: 6px 0px 6px 6px ;
+	padding: 4px 6px 4px 10px;
+}
+#mpd.3 {
+	margin: 6px 0px 6px 0px ;
+	padding: 4px;
+}
+#mpd.4 {
+	border-radius: 0px 10px 10px 0px;
+	margin: 6px 6px 6px 0px ;
+	padding: 4px 10px 4px 6px;
+}
+#mpd.2,#mpd.3,#mpd.4 {
+	background-color: @background-alt1;
+	font-size: 14px;
 }
 
 /** ********** Spotify ********** **/
 #custom-spotify {
 	background-color: @background-alt1;
 	color: @foreground;
+	border-radius: 10px;
+	margin: 6px 0px 6px 6px ;
+	padding: 4px 8px;
+	font-size: 12px;
+	font-weight: bold;
 }
 
 #custom-spotify.paused {
-	background-color: @background-alt1;
 	color: @foreground;
 }
 
@@ -167,31 +175,79 @@ window#waybar.hidden {
 }
 
 #custom-spotify.offline {
-	background-color: @red;
-	color: @background;
+	color: @red;
+}
+
+/** ********** CPU ********** **/
+#cpu {
+	color: @red;
+}
+
+/** ********** Memory ********** **/
+#memory {
+	color: @green;
+}
+
+/** ********** Disk ********** **/
+#disk {
+	color: @yellow;
 }
 
 /** ********** Pulseaudio ********** **/
 #pulseaudio {
-	background-color: @yellow;
+	color: @blue;
 }
-
 #pulseaudio.bluetooth {
-	background-color: @yellow;
+	color: @cyan;
 }
 #pulseaudio.muted {
-	background-color: @red;
-	color: @background;
+	color: @red;
+}
+
+#pulseaudio.2 {
+}
+#pulseaudio.2.bluetooth {
+}
+#pulseaudio.2.muted {
+}
+
+/** ********** Backlight ********** **/
+#backlight {
+	color: @magenta;
+}
+
+/** ********** Battery ********** **/
+#battery {
+	color: @cyan;
+}
+#battery.charging {
+}
+#battery.plugged {
+}
+@keyframes blink {
+    to {
+        color: @foreground;
+    }
+}
+#battery.critical:not(.charging) {
+	background-color: @background-alt2;
+}
+#battery.2.critical:not(.charging) {
+	background-color: @background-alt1;
+    color: @red;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
 }
 
 /** ********** Network ********** **/
 #network {
-	background-color: @magenta;
+	color: @yellow;
 }
-
 #network.disconnected,#network.disabled {
-	background-color: @background-alt1;
-	color: @foreground;
+	color: @red;
 }
 #network.linked {
 }
@@ -202,15 +258,13 @@ window#waybar.hidden {
 
 /** ********** Bluetooth ********** **/
 #bluetooth {
-	background-color: @cyan;
+	color: @green;
 }
 #bluetooth.disabled{
-	background-color: @background-alt1;
-	color: @foreground;
+	color: @red;
 }
 #bluetooth.off{
-	background-color: @background-alt1;
-	color: @foreground;
+	color: @red;
 }
 #bluetooth.on{
 }
@@ -223,13 +277,21 @@ window#waybar.hidden {
 #bluetooth.pairable{
 }
 
+/** ********** Clock ********** **/
+#clock {
+	color: @blue;
+}
+
 /** ********** Submap ********** **/
 
 #submap {
-	background-color: @background-alt2;
+	background-color: @background-alt1;
 	color: @foreground;
 	font-size: 12px;
 	font-weight: bold;
+	border-radius: 10px;
+	margin: 6px 0px 6px 6px ;
+	padding: 4px 8px;
 }
 #submap.resize {
 	background-color: @selected;
@@ -243,76 +305,54 @@ window#waybar.hidden {
 /** ********** WLR Desktop ********** **/
 #workspaces {
 	background-color: @background;
-	border-radius: 4px;
-	margin: 0px 0px;
-	padding: 0px 0px;
+	border-radius: 10px;
+	margin-left: 6px ;
+	margin-bottom: 2px ;
+	padding: 0px;
 }
 #workspaces button{
 	color: @foreground;
 }
 #workspaces button.active{
-	color: @selected;
+	color: @red;
 }
 #workspaces button.urgent{
-	color: @red;
+	color: @green;
 }
 #workspaces button.hidden{
 	color: @yellow;
 }
 
-/** ********** Custom ********** **/
-#custom-themes, #custom-menu, #custom-power, #custom-lightmode {
-	border-radius: 12px;
-	margin: 6px 0px;
-	padding: 2px 10px;
-}
-
-#custom-lightmode {
-    background-color: @background-alt2;
-	color: @red;
-}
-#custom-lightmode.on {
-    background-color: @green;
-	color: @background;
-}
-
-#custom-themes {
-	background-color: @selected;
-	padding: 2px 8px;
-}
-
-#custom-menu {
-	background-color: @selected;
-	margin-left: 6px;
-	padding: 2px 6px;
-	font-size: 16px;
-}
-
-#custom-power {
-	background-color: @red;
-	margin-right: 6px;
-	padding: 2px 8px;
-	font-size: 16px;
-}
-
-/** Common style **/
+/** ********** Common style ********** **/
 #backlight, 
 #battery,
 #clock,
 #cpu,
 #disk,
-#mode,
 #memory,
-#mpd,
-#custom-spotify,
-#idle_inhibitor,
-#custom-sunset,
-#tray,
-#submap,
 #pulseaudio,
 #network,
 #bluetooth {
-	border-radius: 12px;
-	margin: 6px 0px;
-	padding: 2px 10px;
+	background-color: @background-alt2;
+	border-radius: 10px 0px 0px 10px;
+	margin: 6px 0px 6px 0px ;
+	padding: 4px 6px;
+}
+
+#backlight.2, 
+#battery.2,
+#clock.2,
+#cpu.2,
+#disk.2,
+#memory.2,
+#pulseaudio.2,
+#network.2,
+#bluetooth.2 {
+	background-color: @background-alt1;
+	color: @foreground;
+	font-size: 12px;
+	font-weight: bold;
+	border-radius: 0px 10px 10px 0px;
+	margin: 6px 6px 6px 0px ;
+	padding: 5px 6px 4px 6px;
 }

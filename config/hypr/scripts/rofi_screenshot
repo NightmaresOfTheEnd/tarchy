@@ -10,7 +10,7 @@ background="`cat $DIR/rofi/shared/colors.rasi | grep 'background:' | cut -d':' -
 accent="`cat $DIR/rofi/shared/colors.rasi | grep 'selected:' | cut -d':' -f2 | tr -d ' '\;`"
 
 # Import Current Theme
-RASI="$DIR/rofi/screenshot.rasi"
+RASI="$HOME/.config/rofi/screenshot.rasi"
 
 # Theme Elements
 prompt='Screenshot'
@@ -57,7 +57,7 @@ if [[ ! -d "$dir" ]]; then
 fi
 
 # notify and view screenshot
-iDIR="$HOME/.config/hypr/mako/icons"
+iDIR="$HOME/.config/mako/icons"
 notify_view() {
 	notify_cmd_shot="notify-send -h string:x-canonical-private-synchronous:sys-notify-shot -u low -i ${iDIR}/picture.png"
 	${notify_cmd_shot} 'Copied to clipboard.'

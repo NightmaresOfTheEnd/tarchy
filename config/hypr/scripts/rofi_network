@@ -61,7 +61,7 @@ class SafeConfigParser(configparser.ConfigParser):
 CONF = SafeConfigParser()
 
 # Default config paths
-default_config_dir = expanduser("~/.config/hypr/rofi")
+default_config_dir = expanduser("~/.config/rofi")
 default_config_path = os.path.join(default_config_dir, "networkmenu_config.ini")
 
 
@@ -260,7 +260,7 @@ args = parse_args()
 # Config file priority:
 # 1. Command line --config flag
 # 2. NM_DMENU_CONFIG environment variable
-# 3. Default path (~/.config/hypr/rofi/networkmenu_config.ini)
+# 3. Default path (~/.config/rofi/networkmenu_config.ini)
 if args.config_path:
     # Command line flag takes precedence if provided
     if isfile(args.config_path):

@@ -4,7 +4,7 @@
 
 # Import Current Theme
 DIR="$HOME/.config/hypr"
-RASI="$DIR/rofi/runner.rasi"
+RASI="$HOME/.config/rofi/runner.rasi"
 
 # Run
 rofi \

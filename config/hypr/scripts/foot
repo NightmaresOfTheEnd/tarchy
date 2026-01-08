@@ -6,10 +6,10 @@
 
 # Get Colors
 DIR="$HOME/.config/hypr"
-background="`cat $DIR/rofi/shared/colors.rasi | grep 'background:' | cut -d':' -f2 | tr -d ' '\;`"
-accent="`cat $DIR/rofi/shared/colors.rasi | grep 'selected:' | cut -d':' -f2 | tr -d ' '\;`"
+background="`cat $HOME/.config/rofi/shared/colors.rasi | grep 'background:' | cut -d':' -f2 | tr -d ' '\;`"
+accent="`cat $HOME/.config/rofi/shared/colors.rasi | grep 'selected:' | cut -d':' -f2 | tr -d ' '\;`"
 
-CONFIG="$HOME/.config/hypr/foot/foot.ini"
+CONFIG="$HOME/.config/foot/foot.ini"
 
 if [[ "$1" == '-f' ]]; then
 	foot --app-id='foot-float' --config="$CONFIG"
