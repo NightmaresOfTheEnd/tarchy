@@ -75,12 +75,26 @@ window#waybar.hidden {
 	color: @background;
 }
 
+/** ********** Animations Toggle ********** **/
+#custom-animations {
+    background-color: @background-alt1;
+	color: @foreground;
+	font-size: 16px;
+	border-radius: 10px;
+	margin: 6px 6px 6px 6px;
+	padding: 4px 9px;
+}
+#custom-animations.on {
+    background-color: @cyan;
+	color: @background;
+}
+
 /** ********** Idle Inhibitor ********** **/
 #idle_inhibitor {
 	background-color: @green;
 	color: @background;
 	border-radius: 10px;
-	margin: 6px 0px 6px 6px ;
+	margin: 6px 6px 6px 6px;
 	padding: 4px 6px;
 }
 #idle_inhibitor.deactivated {

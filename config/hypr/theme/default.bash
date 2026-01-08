@@ -31,7 +31,7 @@ wallpaper="$HOME/.config/hypr/wallpapers/wallpaper.png"
 gtk_theme='Catppuccin-Mocha'
 gtk_icons='Luv-Folders-Dark'
 gtk_font='Noto Sans 9'
-cursor_theme='Sweet'
+cursor_theme='Adwaita'
 
 # Geany
 geany_colors='catppuccin-mocha.conf'
