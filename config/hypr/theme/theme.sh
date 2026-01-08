@@ -30,11 +30,25 @@ fi
 
 ## Wallpaper directory
 WALLDIR="$HOME/.config/hypr/wallpapers"
+DEFAULT_WALLPAPER="$WALLDIR/wallpaper.png"
 
 ## Pick random wallpaper from folder
 pick_random_wallpaper() {
-	find "$WALLDIR" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) | shuf -n 1
+	find "$WALLDIR" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) ! -name "wallpaper.png" | shuf -n 1
 }
+
+## Ensure default wallpaper exists (create symlink if missing)
+ensure_default_wallpaper() {
+	if [[ ! -e "$DEFAULT_WALLPAPER" ]]; then
+		random_wp=$(pick_random_wallpaper)
+		if [[ -n "$random_wp" ]]; then
+			ln -sf "$random_wp" "$DEFAULT_WALLPAPER"
+		fi
+	fi
+}
+
+# Make sure we have a default wallpaper
+ensure_default_wallpaper
 
 ## Default Theme
 source_default() {
