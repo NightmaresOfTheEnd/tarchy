@@ -303,6 +303,60 @@ install_themes() {
     fi
 }
 
+install_sddm_theme() {
+    print_header "Installing SDDM Theme"
+
+    local sddm_theme_dir="/usr/share/sddm/themes/sugar-candy"
+    local sddm_conf_dir="/etc/sddm.conf.d"
+    local wallpaper_src="$HOME/.config/hypr/wallpapers/wallpaper.png"
+    local theme_conf_src="$DOTFILES_DIR/config/sddm/theme.conf"
+    local sddm_conf_src="$DOTFILES_DIR/config/sddm/sddm.conf"
+
+    # Check if sugar-candy theme is installed
+    if [[ ! -d "$sddm_theme_dir" ]]; then
+        print_warning "SDDM sugar-candy theme not found. Skipping SDDM theme setup."
+        print_info "Install it with: yay -S sddm-sugar-candy-git"
+        return
+    fi
+
+    # Copy SDDM configuration
+    print_info "Setting sugar-candy as default SDDM theme..."
+    if [[ "$DRY_RUN" == true ]]; then
+        print_dry "sudo mkdir -p $sddm_conf_dir"
+        print_dry "sudo cp $sddm_conf_src $sddm_conf_dir/theme.conf"
+    else
+        sudo mkdir -p "$sddm_conf_dir"
+        sudo cp "$sddm_conf_src" "$sddm_conf_dir/theme.conf"
+        print_success "SDDM theme set to sugar-candy"
+    fi
+
+    # Copy wallpaper to theme directory
+    if [[ -f "$wallpaper_src" ]]; then
+        print_info "Copying wallpaper to SDDM theme..."
+        if [[ "$DRY_RUN" == true ]]; then
+            print_dry "sudo cp $wallpaper_src $sddm_theme_dir/wallpaper.png"
+        else
+            sudo cp "$wallpaper_src" "$sddm_theme_dir/wallpaper.png"
+            print_success "Wallpaper copied to SDDM theme"
+        fi
+    else
+        print_warning "Wallpaper not found at $wallpaper_src"
+    fi
+
+    # Copy theme configuration
+    if [[ -f "$theme_conf_src" ]]; then
+        print_info "Applying theme configuration..."
+        if [[ "$DRY_RUN" == true ]]; then
+            print_dry "sudo cp $theme_conf_src $sddm_theme_dir/theme.conf"
+        else
+            sudo cp "$theme_conf_src" "$sddm_theme_dir/theme.conf"
+            print_success "SDDM theme configured with Catppuccin colors"
+        fi
+    fi
+
+    print_success "SDDM theme installation complete"
+}
+
 install_gpu_drivers() {
     print_header "GPU Driver Installation"
 
@@ -525,6 +579,11 @@ main() {
     [[ "$INSTALL_FONTS" == true ]] && install_fonts
     [[ "$INSTALL_THEMES" == true ]] && install_themes
     [[ "$INSTALL_CONFIGS" == true ]] && install_configs
+
+    # Install SDDM theme (only if packages were installed)
+    if [[ "$INSTALL_PACKAGES" == true ]]; then
+        install_sddm_theme
+    fi
 
     # Enable services (only if packages were installed)
     if [[ "$INSTALL_PACKAGES" == true ]] && [[ "$DRY_RUN" == false ]]; then
