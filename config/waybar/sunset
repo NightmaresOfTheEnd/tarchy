@@ -5,7 +5,7 @@
 ## Script for hyprsunset modes ------------------------------
 
 # Vars
-DIR="$HOME/.config/hyprcat"
+DIR="$HOME/.config/hypr"
 STATE_FILE="$DIR/theme/.sunset_state"
 if [[ ! -f "$STATE_FILE" ]]; then
     echo "day" > "$STATE_FILE"
