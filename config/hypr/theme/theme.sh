@@ -97,20 +97,15 @@ source_pywal() {
 
 ## Wallpaper ---------------------------------
 apply_wallpaper() {
-	# Get old wallpaper path before updating
-	old_wallpaper=$(grep '^\$wallpaper' ${DIR}/hyprpaper.conf | sed 's/\$wallpaper = //')
-
 	# Update the config file
 	sed -i -e "s|\$wallpaper =.*|\$wallpaper = $wallpaper|g" ${DIR}/hyprpaper.conf
+
+	# Unload all wallpapers first
+	hyprctl hyprpaper unload all
 
 	# Preload and set new wallpaper
 	hyprctl hyprpaper preload "$wallpaper"
 	hyprctl hyprpaper wallpaper ",$wallpaper"
-
-	# Unload old wallpaper to free memory
-	if [[ -n "$old_wallpaper" && "$old_wallpaper" != "$wallpaper" ]]; then
-		hyprctl hyprpaper unload "$old_wallpaper"
-	fi
 }
 
 ## Alacritty ---------------------------------
