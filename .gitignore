@@ -35,3 +35,5 @@ Thumbs.db
 # Theme state files (regenerated on use)
 config/hypr/theme/.mode_state
 config/hypr/theme/.sunset_state
+
+example
