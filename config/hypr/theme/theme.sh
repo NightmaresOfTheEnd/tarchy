@@ -422,3 +422,6 @@ apply_wlogout
 apply_wofi
 apply_hyprlock
 apply_hypr
+
+## Reload Hyprland to apply border color changes
+hyprctl reload
