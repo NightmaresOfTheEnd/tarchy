@@ -145,8 +145,8 @@ source_pywal_select() {
 		menu+="$(basename "$wp")\n"
 	done
 
-	# Show rofi selector
-	selected=$(echo -e "$menu" | rofi -dmenu -p "Select Wallpaper" -theme "$HOME/.config/rofi/launcher.rasi")
+	# Show rofi selector (positioned on right side)
+	selected=$(echo -e "$menu" | rofi -dmenu -p "Select Wallpaper" -theme "$HOME/.config/rofi/launcher.rasi" -theme-str 'window { location: east; }')
 
 	if [[ -z "$selected" ]]; then
 		exit  # User cancelled
