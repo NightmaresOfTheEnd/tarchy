@@ -122,6 +122,71 @@ source_pywal() {
 	accent="$color4"
 }
 
+## Pywal Theme with rofi wallpaper selector
+source_pywal_select() {
+	# Check for wallpapers
+	if [[ ! -d "$WALLDIR" ]]; then
+		mkdir -p "$WALLDIR"
+		notify-send -h string:x-canonical-private-synchronous:sys-notify-noimg -u low -i ${PATH_MAKO}/icons/picture.png "Put some wallpapers in : $WALLDIR"
+		exit
+	fi
+
+	# Get list of wallpapers
+	mapfile -t wallpapers < <(find "$WALLDIR" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) ! -name "wallpaper.png" | sort)
+
+	if [[ ${#wallpapers[@]} -eq 0 ]]; then
+		notify-send -h string:x-canonical-private-synchronous:sys-notify-noimg -u low -i ${PATH_MAKO}/icons/picture.png "There are no wallpapers in : $WALLDIR"
+		exit
+	fi
+
+	# Build rofi menu with just filenames
+	menu=""
+	for wp in "${wallpapers[@]}"; do
+		menu+="$(basename "$wp")\n"
+	done
+
+	# Show rofi selector
+	selected=$(echo -e "$menu" | rofi -dmenu -p "Select Wallpaper" -theme "$HOME/.config/rofi/launcher.rasi")
+
+	if [[ -z "$selected" ]]; then
+		exit  # User cancelled
+	fi
+
+	# Find full path of selected wallpaper
+	selected_path=""
+	for wp in "${wallpapers[@]}"; do
+		if [[ "$(basename "$wp")" == "$selected" ]]; then
+			selected_path="$wp"
+			break
+		fi
+	done
+
+	if [[ -z "$selected_path" ]]; then
+		notify-send -h string:x-canonical-private-synchronous:sys-notify-noimg -u low -i ${PATH_MAKO}/icons/picture.png "Wallpaper not found"
+		exit
+	fi
+
+	# Generate colors from selected wallpaper
+	if [[ $(which wal) ]]; then
+		notify-send -t 50000 -h string:x-canonical-private-synchronous:sys-notify-runpywal -i ${PATH_MAKO}/icons/timer.png "Generating Colorscheme. Please wait..."
+		wal -q -n -s -t -e -i "$selected_path"
+		if [[ "$?" != 0 ]]; then
+			notify-send -h string:x-canonical-private-synchronous:sys-notify-runpywal -u normal -i ${PATH_MAKO}/icons/palette.png "Failed to generate colorscheme."
+			exit
+		fi
+	else
+		notify-send -h string:x-canonical-private-synchronous:sys-notify-runpywal -u normal -i ${PATH_MAKO}/icons/palette.png "'pywal' is not installed."
+		exit
+	fi
+
+	cat ${PYWAL_THEME} > ${CURRENT_THEME}
+	source ${CURRENT_THEME}
+	altbackground="`pastel color $background | pastel lighten 0.10 | pastel format hex`"
+	altforeground="`pastel color $foreground | pastel darken 0.30 | pastel format hex`"
+	modbackground=(`pastel gradient -n 3 $background $altbackground | pastel format hex`)
+	accent="$color4"
+}
+
 ## Pywal Theme from default wallpaper (wallpaper.png)
 source_pywal_default() {
 	if [[ ! -f "$DEFAULT_WALLPAPER" ]]; then
@@ -433,10 +498,12 @@ elif [[ "$1" == '--light' ]]; then
 	apply_geany
 elif [[ "$1" == '--pywal' ]]; then
 	source_pywal
+elif [[ "$1" == '--pywal-select' ]]; then
+	source_pywal_select
 elif [[ "$1" == '--pywal-default' ]]; then
 	source_pywal_default
 else
-	echo "Available Options: --default  --light  --pywal  --pywal-default"
+	echo "Available Options: --default  --light  --pywal  --pywal-select  --pywal-default"
 	exit 1
 fi
 

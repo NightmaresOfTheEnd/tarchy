@@ -123,8 +123,8 @@
     "custom/themes": {
         "format": "",
         "tooltip": false,
-        "on-click": "$HOME/.config/hypr/theme/theme.sh --pywal",
-        "on-click-right": "$HOME/.config/hypr/theme/theme.sh --pywal-default",
+        "on-click": "$HOME/.config/hypr/theme/theme.sh --pywal-select",
+        "on-click-right": "$HOME/.config/hypr/theme/theme.sh --pywal",
     },
 
     "custom/lightmode": {
