@@ -199,33 +199,33 @@ apply_alacritty() {
 
 ## Foot --------------------------------------
 apply_foot() {
-	# foot : colors
+	# foot : colors (only background from pywal, text colors stay static)
 	cat > ${PATH_FOOT}/colors.ini <<- _EOF_
 		## Colors configuration
 		[colors]
 		alpha=0.7
-		foreground=${foreground:1}
+		foreground=CDD6F4
 		background=${background:1}
 
-		## Normal/regular colors (color palette 0-7)
-		regular0=${color0:1}  # black
-		regular1=${color1:1}  # red
-		regular2=${color2:1}  # green
-		regular3=${color3:1}  # yellow
-		regular4=${color4:1}  # blue
-		regular5=${color5:1}  # magenta
-		regular6=${color6:1}  # cyan
-		regular7=${color7:1}  # white
+		## Normal/regular colors (color palette 0-7) - static Catppuccin
+		regular0=45475A  # black
+		regular1=F38BA8  # red
+		regular2=A6E3A1  # green
+		regular3=F9E2AF  # yellow
+		regular4=89B4FA  # blue
+		regular5=F5C2E7  # magenta
+		regular6=94E2D5  # cyan
+		regular7=BAC2DE  # white
 
-		## Bright colors (color palette 8-15)
-		bright0=${color8:1}   # bright black
-		bright1=${color9:1}   # bright red
-		bright2=${color10:1}   # bright green
-		bright3=${color11:1}   # bright yellow
-		bright4=${color12:1}   # bright blue
-		bright5=${color13:1}   # bright magenta
-		bright6=${color14:1}   # bright cyan
-		bright7=${color15:1}   # bright white
+		## Bright colors (color palette 8-15) - static Catppuccin
+		bright0=585B70   # bright black
+		bright1=F38BA8   # bright red
+		bright2=A6E3A1   # bright green
+		bright3=F9E2AF   # bright yellow
+		bright4=89B4FA   # bright blue
+		bright5=F5C2E7   # bright magenta
+		bright6=94E2D5   # bright cyan
+		bright7=A6ADC8   # bright white
 	_EOF_
 }
 
