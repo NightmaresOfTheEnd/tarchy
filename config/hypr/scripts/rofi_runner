@@ -9,4 +9,5 @@ RASI="$HOME/.config/rofi/runner.rasi"
 # Run
 rofi \
     -show run \
+    -normal-window \
 	-theme ${RASI}

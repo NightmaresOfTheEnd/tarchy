@@ -81,6 +81,7 @@ rofi_cmd() {
 		-mesg "$mesg" \
 		${active} ${urgent} \
 		-markup-rows \
+		-normal-window \
 		-theme ${RASI}
 }
 

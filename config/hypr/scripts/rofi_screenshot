@@ -38,6 +38,7 @@ rofi_cmd() {
 		-p "$prompt" \
 		-mesg "$mesg" \
 		-markup-rows \
+		-normal-window \
 		-theme ${RASI}
 }
 

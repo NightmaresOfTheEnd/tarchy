@@ -9,4 +9,5 @@ rofi -dmenu \
      -password \
      -i \
      -p "Root" \
+     -normal-window \
      -theme ${RASI}
