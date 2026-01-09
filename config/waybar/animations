@@ -12,12 +12,10 @@ fi
 # Toggle animations
 toggle_animations() {
 	if [[ $(cat "$STATE_FILE") == "on" ]]; then
-		hyprctl keyword animations:enabled false
-		hyprctl keyword animation fadeLayers,0
+		hyprctl --batch "keyword animations:enabled false; keyword animation fadeLayers,0; keyword animation fadeLayersIn,0; keyword animation fadeLayersOut,0"
 		echo "off" > "$STATE_FILE"
 	else
-		hyprctl keyword animations:enabled true
-		hyprctl keyword animation fadeLayers,1,8,default
+		hyprctl --batch "keyword animations:enabled true; keyword animation fadeLayers,1,8,default; keyword animation fadeLayersIn,1,8,default; keyword animation fadeLayersOut,1,8,default"
 		echo "on" > "$STATE_FILE"
 	fi
 }
