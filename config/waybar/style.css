@@ -38,13 +38,13 @@ window#waybar.hidden {
 	color: @foreground;
 }
 #custom-lightmode.on {
-    background-color: @selected;
+    background-color: @foreground;
 	color: @background;
 }
 
 #custom-menu {
 	background-color: @background-alt1;
-	color: @selected;
+	color: @foreground;
 	font-size: 18px;
 	border-radius: 0px 14px 0px 0px;
 	margin: 0px 0px 0px 0px;
@@ -52,11 +52,11 @@ window#waybar.hidden {
 }
 
 #custom-themes {
-    background-color: @selected;
+    background-color: @foreground;
 }
 
 #custom-power {
-	background-color: @selected;
+	background-color: @foreground;
 	font-size: 16px;
 }
 
@@ -71,7 +71,7 @@ window#waybar.hidden {
 	padding: 4px 9px;
 }
 #custom-sunset.on {
-    background-color: @selected;
+    background-color: @foreground;
 	color: @background;
 }
 
@@ -85,13 +85,13 @@ window#waybar.hidden {
 	padding: 4px 9px;
 }
 #custom-animations.on {
-    background-color: @selected;
+    background-color: @foreground;
 	color: @background;
 }
 
 /** ********** Idle Inhibitor ********** **/
 #idle_inhibitor {
-	background-color: @selected;
+	background-color: @foreground;
 	color: @background;
 	border-radius: 10px;
 	margin: 6px 6px 6px 6px;
@@ -143,7 +143,7 @@ window#waybar.hidden {
 	color: @foreground;
 }
 #mpd.playing {
-	color: @selected;
+	color: @foreground;
 }
 #mpd.paused {
 }
@@ -183,7 +183,7 @@ window#waybar.hidden {
 }
 
 #custom-spotify.playing {
-    background-color: @selected;
+    background-color: @foreground;
     color: @background;
 }
 
@@ -193,28 +193,28 @@ window#waybar.hidden {
 
 /** ********** CPU ********** **/
 #cpu {
-	color: @selected;
+	color: @foreground;
 }
 
 /** ********** Memory ********** **/
 #memory {
-	color: @selected;
+	color: @foreground;
 }
 
 /** ********** Disk ********** **/
 #disk {
-	color: @selected;
+	color: @foreground;
 }
 
 /** ********** Pulseaudio ********** **/
 #pulseaudio {
-	color: @selected;
+	color: @foreground;
 }
 #pulseaudio.bluetooth {
-	color: @selected;
+	color: @foreground;
 }
 #pulseaudio.muted {
-	color: @selected;
+	color: @foreground;
 }
 
 #pulseaudio.2 {
@@ -226,12 +226,12 @@ window#waybar.hidden {
 
 /** ********** Backlight ********** **/
 #backlight {
-	color: @selected;
+	color: @foreground;
 }
 
 /** ********** Battery ********** **/
 #battery {
-	color: @selected;
+	color: @foreground;
 }
 #battery.charging {
 }
@@ -247,7 +247,7 @@ window#waybar.hidden {
 }
 #battery.2.critical:not(.charging) {
 	background-color: @background-alt1;
-    color: @selected;
+    color: @foreground;
     animation-name: blink;
     animation-duration: 0.5s;
     animation-timing-function: linear;
@@ -257,10 +257,10 @@ window#waybar.hidden {
 
 /** ********** Network ********** **/
 #network {
-	color: @selected;
+	color: @foreground;
 }
 #network.disconnected,#network.disabled {
-	color: @selected;
+	color: @foreground;
 }
 #network.linked {
 }
@@ -271,13 +271,13 @@ window#waybar.hidden {
 
 /** ********** Bluetooth ********** **/
 #bluetooth {
-	color: @selected;
+	color: @foreground;
 }
 #bluetooth.disabled{
-	color: @selected;
+	color: @foreground;
 }
 #bluetooth.off{
-	color: @selected;
+	color: @foreground;
 }
 #bluetooth.on{
 }
@@ -292,13 +292,13 @@ window#waybar.hidden {
 
 /** ********** Clock ********** **/
 #clock {
-	color: @selected;
+	color: @foreground;
 }
 
 /** ********** Submap ********** **/
 
 #submap {
-	background-color: @selected;
+	background-color: @foreground;
 	color: @background;
 	font-size: 12px;
 	font-weight: bold;
@@ -307,11 +307,11 @@ window#waybar.hidden {
 	padding: 4px 8px;
 }
 #submap.resize {
-	background-color: @selected;
+	background-color: @foreground;
 	color: @background;
 }
 #submap.move {
-	background-color: @selected;
+	background-color: @foreground;
 	color: @background;
 }
 
@@ -327,10 +327,10 @@ window#waybar.hidden {
 	color: @foreground;
 }
 #workspaces button.active{
-	color: @selected;
+	color: @foreground;
 }
 #workspaces button.urgent{
-	color: @selected;
+	color: @foreground;
 }
 #workspaces button.hidden{
 	color: @foreground;
