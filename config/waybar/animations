@@ -13,9 +13,11 @@ fi
 toggle_animations() {
 	if [[ $(cat "$STATE_FILE") == "on" ]]; then
 		hyprctl keyword animations:enabled false
+		hyprctl keyword animation fadeLayers,0
 		echo "off" > "$STATE_FILE"
 	else
 		hyprctl keyword animations:enabled true
+		hyprctl keyword animation fadeLayers,1,8,default
 		echo "on" > "$STATE_FILE"
 	fi
 }
