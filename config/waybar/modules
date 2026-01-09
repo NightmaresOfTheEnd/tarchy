@@ -124,7 +124,7 @@
         "format": "",
         "tooltip": false,
         "on-click": "$HOME/.config/hypr/theme/theme.sh --pywal",
-        "on-click-right": "$HOME/.config/hypr/theme/theme.sh --default",
+        "on-click-right": "$HOME/.config/hypr/theme/theme.sh --pywal-default",
     },
 
     "custom/lightmode": {

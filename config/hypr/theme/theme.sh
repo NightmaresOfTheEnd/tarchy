@@ -80,7 +80,7 @@ source_light() {
 	notify-send -h string:x-canonical-private-synchronous:sys-notify-dtheme -u normal -i ${PATH_MAKO}/icons/palette.png "Applying Light Theme..."
 }
 
-## Random Theme
+## Pywal Theme (random from directory)
 source_pywal() {
 	# Check for wallpapers
 	check_wallpaper() {
@@ -98,7 +98,7 @@ source_pywal() {
 	}
 
 	# Run `pywal` to generate colors
-	generate_colors() {	
+	generate_colors() {
 		check_wallpaper
 		if [[ `which wal` ]]; then
 			notify-send -t 50000 -h string:x-canonical-private-synchronous:sys-notify-runpywal -i ${PATH_MAKO}/icons/timer.png "Generating Colorscheme. Please wait..."
@@ -116,6 +116,34 @@ source_pywal() {
 	generate_colors
 	cat ${PYWAL_THEME} > ${CURRENT_THEME}
 	source ${CURRENT_THEME}
+	altbackground="`pastel color $background | pastel lighten 0.10 | pastel format hex`"
+	altforeground="`pastel color $foreground | pastel darken 0.30 | pastel format hex`"
+	modbackground=(`pastel gradient -n 3 $background $altbackground | pastel format hex`)
+	accent="$color4"
+}
+
+## Pywal Theme from default wallpaper (wallpaper.png)
+source_pywal_default() {
+	if [[ ! -f "$DEFAULT_WALLPAPER" ]]; then
+		notify-send -h string:x-canonical-private-synchronous:sys-notify-noimg -u low -i ${PATH_MAKO}/icons/picture.png "Default wallpaper not found: $DEFAULT_WALLPAPER"
+		exit
+	fi
+
+	if [[ `which wal` ]]; then
+		notify-send -t 50000 -h string:x-canonical-private-synchronous:sys-notify-runpywal -i ${PATH_MAKO}/icons/timer.png "Generating Colorscheme from default wallpaper..."
+		wal -q -n -s -t -e -i "$DEFAULT_WALLPAPER"
+		if [[ "$?" != 0 ]]; then
+			notify-send -h string:x-canonical-private-synchronous:sys-notify-runpywal -u normal -i ${PATH_MAKO}/icons/palette.png "Failed to generate colorscheme."
+			exit
+		fi
+	else
+		notify-send -h string:x-canonical-private-synchronous:sys-notify-runpywal -u normal -i ${PATH_MAKO}/icons/palette.png "'pywal' is not installed."
+		exit
+	fi
+
+	cat ${PYWAL_THEME} > ${CURRENT_THEME}
+	source ${CURRENT_THEME}
+	wallpaper="$DEFAULT_WALLPAPER"
 	altbackground="`pastel color $background | pastel lighten 0.10 | pastel format hex`"
 	altforeground="`pastel color $foreground | pastel darken 0.30 | pastel format hex`"
 	modbackground=(`pastel gradient -n 3 $background $altbackground | pastel format hex`)
@@ -405,8 +433,10 @@ elif [[ "$1" == '--light' ]]; then
 	apply_geany
 elif [[ "$1" == '--pywal' ]]; then
 	source_pywal
+elif [[ "$1" == '--pywal-default' ]]; then
+	source_pywal_default
 else
-	echo "Available Options: --default  --light  --pywal"
+	echo "Available Options: --default  --light  --pywal  --pywal-default"
 	exit 1
 fi
 
