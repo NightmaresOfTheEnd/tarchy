@@ -23,9 +23,9 @@ toggle_animations() {
 # Show info (format: text\ntooltip\nclass)
 show_info() {
 	if [[ $(cat "$STATE_FILE") == "on" ]]; then
-		echo -e "󰸌\nAnimations ON\non"
+		echo -e "󰳑\nAnimations ON\non"
 	else
-		echo -e "󰸊\nAnimations OFF\noff"
+		echo -e "󰳒\nAnimations OFF\noff"
 	fi
 }
 
