@@ -227,6 +227,7 @@ install_configs() {
         "ranger"
         "ncmpcpp"
         "geany"
+        "vim"
     )
 
     for config in "${configs[@]}"; do

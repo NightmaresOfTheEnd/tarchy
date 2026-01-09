@@ -1,0 +1,90 @@
+" Disable old vi compatibility (enable full Vim features)
+set nocompatible
+
+" Enable syntax highlighting (color code)
+syntax on
+
+" Disable modelines (prevents unsafe file-based settings)
+set modelines=0
+
+" Use UTF-8 encoding for all files
+set encoding=utf-8
+
+" Wrap long lines instead of cutting them off
+set wrap
+
+" Show a tab as 2 spaces
+set tabstop=2
+
+" Indent by 2 spaces when using >> or <<
+set shiftwidth=2
+
+" Pressing Tab in insert mode equals 2 spaces
+set softtabstop=2
+
+" Copy indentation from previous line automatically
+set autoindent
+
+" Preserve indentation style when copying lines
+set copyindent
+
+" Convert tabs to spaces
+set expandtab
+
+" Don't round indentation to multiples of shiftwidth
+set noshiftround
+
+" Highlight all search matches
+set hlsearch
+
+" Show search results as you type
+set incsearch
+
+" Briefly jump to matching bracket when typing ),],}
+set showmatch
+
+" Smart case search: ignore case unless uppercase used
+set smartcase
+
+" Show relative line numbers (good for movement commands)
+set relativenumber
+
+" Allow switching buffers without saving
+set hidden
+
+" Optimize for fast terminals (better redraw)
+set ttyfast
+
+" Always show status line
+set laststatus=2
+
+" Show partial command in bottom right while typing
+set showcmd
+
+" Use dark background color scheme
+set background=dark
+
+" Disable system beep on errors
+set noerrorbells
+
+" Use screen flash instead of beep for alerts
+set visualbell
+
+" Enable command-line autocompletion menu
+set wildmenu
+
+" Optional: speed up macros and scrolling in large files
+set lazyredraw
+
+
+" ============================
+" Line numbers
+" ============================
+
+" Show absolute line number for current line, relative for others
+set number
+set relativenumber
+
+" Highlight current line number
+set cursorline
+hi CursorLineNr guifg=yellow guibg=NONE
