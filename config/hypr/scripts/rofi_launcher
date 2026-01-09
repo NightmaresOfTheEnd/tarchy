@@ -6,8 +6,12 @@
 DIR="$HOME/.config/hypr"
 RASI="$HOME/.config/rofi/launcher.rasi"
 
-# Run
-rofi \
-    -show drun \
-    -normal-window \
-	-theme ${RASI}
+# Toggle - kill if running, otherwise start
+if pgrep -x rofi > /dev/null; then
+    pkill -x rofi
+else
+    rofi \
+        -show drun \
+        -normal-window \
+        -theme ${RASI}
+fi
