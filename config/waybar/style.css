@@ -35,16 +35,16 @@ window#waybar.hidden {
 
 #custom-lightmode {
     background-color: @background-alt1;
-	color: @red;
+	color: @foreground;
 }
 #custom-lightmode.on {
-    background-color: @green;
+    background-color: @selected;
 	color: @background;
 }
 
 #custom-menu {
 	background-color: @background-alt1;
-	color: @magenta;
+	color: @selected;
 	font-size: 18px;
 	border-radius: 0px 14px 0px 0px;
 	margin: 0px 0px 0px 0px;
@@ -56,7 +56,7 @@ window#waybar.hidden {
 }
 
 #custom-power {
-	background-color: @red;
+	background-color: @selected;
 	font-size: 16px;
 }
 
@@ -71,7 +71,7 @@ window#waybar.hidden {
 	padding: 4px 9px;
 }
 #custom-sunset.on {
-    background-color: @yellow;
+    background-color: @selected;
 	color: @background;
 }
 
@@ -85,20 +85,21 @@ window#waybar.hidden {
 	padding: 4px 9px;
 }
 #custom-animations.on {
-    background-color: @cyan;
+    background-color: @selected;
 	color: @background;
 }
 
 /** ********** Idle Inhibitor ********** **/
 #idle_inhibitor {
-	background-color: @green;
+	background-color: @selected;
 	color: @background;
 	border-radius: 10px;
 	margin: 6px 6px 6px 6px;
 	padding: 4px 6px;
 }
 #idle_inhibitor.deactivated {
-	background-color: @red;
+	background-color: @background-alt1;
+	color: @foreground;
 }
 
 /** ********** Tray ********** **/
@@ -136,13 +137,13 @@ window#waybar.hidden {
 	font-weight: bold;
 }
 #mpd.disconnected {
-	color: @red;
+	color: @foreground;
 }
 #mpd.stopped {
-	color: @red;
+	color: @foreground;
 }
 #mpd.playing {
-	color: @cyan;
+	color: @selected;
 }
 #mpd.paused {
 }
@@ -182,40 +183,38 @@ window#waybar.hidden {
 }
 
 #custom-spotify.playing {
-    background: linear-gradient(90deg, @magenta 25%, @red 50%, @yellow 75%, @cyan 100%); 
-    background-size: 300% 300%;
-    animation: gradient 10s ease infinite;
+    background-color: @selected;
     color: @background;
 }
 
 #custom-spotify.offline {
-	color: @red;
+	color: @foreground;
 }
 
 /** ********** CPU ********** **/
 #cpu {
-	color: @red;
+	color: @selected;
 }
 
 /** ********** Memory ********** **/
 #memory {
-	color: @green;
+	color: @selected;
 }
 
 /** ********** Disk ********** **/
 #disk {
-	color: @yellow;
+	color: @selected;
 }
 
 /** ********** Pulseaudio ********** **/
 #pulseaudio {
-	color: @blue;
+	color: @selected;
 }
 #pulseaudio.bluetooth {
-	color: @cyan;
+	color: @selected;
 }
 #pulseaudio.muted {
-	color: @red;
+	color: @selected;
 }
 
 #pulseaudio.2 {
@@ -227,12 +226,12 @@ window#waybar.hidden {
 
 /** ********** Backlight ********** **/
 #backlight {
-	color: @magenta;
+	color: @selected;
 }
 
 /** ********** Battery ********** **/
 #battery {
-	color: @cyan;
+	color: @selected;
 }
 #battery.charging {
 }
@@ -248,7 +247,7 @@ window#waybar.hidden {
 }
 #battery.2.critical:not(.charging) {
 	background-color: @background-alt1;
-    color: @red;
+    color: @selected;
     animation-name: blink;
     animation-duration: 0.5s;
     animation-timing-function: linear;
@@ -258,10 +257,10 @@ window#waybar.hidden {
 
 /** ********** Network ********** **/
 #network {
-	color: @yellow;
+	color: @selected;
 }
 #network.disconnected,#network.disabled {
-	color: @red;
+	color: @selected;
 }
 #network.linked {
 }
@@ -272,13 +271,13 @@ window#waybar.hidden {
 
 /** ********** Bluetooth ********** **/
 #bluetooth {
-	color: @green;
+	color: @selected;
 }
 #bluetooth.disabled{
-	color: @red;
+	color: @selected;
 }
 #bluetooth.off{
-	color: @red;
+	color: @selected;
 }
 #bluetooth.on{
 }
@@ -293,14 +292,14 @@ window#waybar.hidden {
 
 /** ********** Clock ********** **/
 #clock {
-	color: @blue;
+	color: @selected;
 }
 
 /** ********** Submap ********** **/
 
 #submap {
-	background-color: @background-alt1;
-	color: @foreground;
+	background-color: @selected;
+	color: @background;
 	font-size: 12px;
 	font-weight: bold;
 	border-radius: 10px;
@@ -328,13 +327,13 @@ window#waybar.hidden {
 	color: @foreground;
 }
 #workspaces button.active{
-	color: @red;
+	color: @selected;
 }
 #workspaces button.urgent{
-	color: @green;
+	color: @selected;
 }
 #workspaces button.hidden{
-	color: @yellow;
+	color: @foreground;
 }
 
 /** ********** Common style ********** **/
