@@ -422,6 +422,7 @@ enable_services() {
         "NetworkManager"
         "acpid"
         "power-profiles-daemon"
+        "tailscaled"
     )
 
     # Display manager
@@ -599,11 +600,12 @@ main() {
     fi
 
     echo -e "\n${GREEN}${BOLD}Installation completed successfully!${NC}"
-    echo -e "\n${BOLD}Services enabled on boot:${NC}"
+    echo -e "${BOLD}Services enabled on boot:${NC}"
     echo -e "  - SDDM (display manager)"
     echo -e "  - NetworkManager"
     echo -e "  - Bluetooth"
     echo -e "  - Power profiles daemon"
+    echo -e "  - Tailscale"
     echo -e "  - ACPID"
     echo -e "  - Pipewire audio (user session)"
     echo -e "\n${BOLD}Next steps:${NC}"

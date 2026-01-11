@@ -66,6 +66,7 @@ power-profiles-daemon
 networkmanager
 bluez
 bluez-utils
+tailscale
 
 # -----------------------------------------------------------------------------
 # Authentication
