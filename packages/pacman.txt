@@ -49,6 +49,9 @@ playerctl
 pipewire
 wireplumber
 pipewire-pulse
+sof-firmware
+alsa-utils
+alsa-firmware
 
 # -----------------------------------------------------------------------------
 # System Utilities
