@@ -327,7 +327,8 @@ window#waybar.hidden {
 	color: @foreground;
 }
 #workspaces button.active{
-	color: @foreground;
+	color: @selected;
+	font-weight: bold;
 }
 #workspaces button.urgent{
 	color: @foreground;
