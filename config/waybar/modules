@@ -307,16 +307,14 @@
         "smooth-scrolling-threshold": 1,
     },
 
-	// waybar-idle-inhibitor
-    "idle_inhibitor": {
-         "format": "{icon}",
-         "format-icons": {
-             "activated": "",
-             "deactivated": ""
-         },
-         "timeout": 30
+	// idle-inhibitor (toggles hypridle)
+    "custom/idle": {
+         "exec": "$HOME/.config/waybar/idle_inhibitor",
+         "interval": 1,
+         "format": "{}",
+         "tooltip": false,
+         "on-click": "$HOME/.config/waybar/idle_inhibitor --toggle",
     },
-
 	// hyprland-workspaces
     "hyprland/workspaces": {
          "format": "{name}",

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+## Script for toggling hypridle (idle inhibitor)
+
+# Check if hypridle is running
+is_active() {
+	pgrep -x hypridle > /dev/null
+}
+
+# Toggle hypridle
+toggle() {
+	if is_active; then
+		killall hypridle
+	else
+		hypridle &
+		disown
+	fi
+}
+
+# Show info (format: text\ntooltip\nclass)
+show_info() {
+	if is_active; then
+		echo -e "\nIdle active\noff"
+	else
+		echo -e "\nIdle inhibited\non"
+	fi
+}
+
+# Main
+if [[ "${1:-}" == "--toggle" ]]; then
+	toggle
+else
+	show_info
+fi

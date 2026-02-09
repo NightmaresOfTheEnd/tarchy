@@ -2,27 +2,25 @@
 
 ## Script for toggling Hyprland animations
 
-# Vars
-DIR="$HOME/.config/hypr"
-STATE_FILE="$DIR/theme/.animations_state"
-if [[ ! -f "$STATE_FILE" ]]; then
-    echo "on" > "$STATE_FILE"
-fi
+# Check actual Hyprland animation state
+is_enabled() {
+	local val
+	val=$(hyprctl -j getoption animations:enabled 2>/dev/null | jq -r '.int // 1')
+	[[ "$val" == "1" ]]
+}
 
 # Toggle animations
 toggle_animations() {
-	if [[ $(cat "$STATE_FILE") == "on" ]]; then
+	if is_enabled; then
 		hyprctl --batch "keyword animations:enabled false; keyword animation fadeLayers,0; keyword animation fadeLayersIn,0; keyword animation fadeLayersOut,0"
-		echo "off" > "$STATE_FILE"
 	else
 		hyprctl --batch "keyword animations:enabled true; keyword animation fadeLayers,1,8,default; keyword animation fadeLayersIn,1,8,default; keyword animation fadeLayersOut,1,8,default"
-		echo "on" > "$STATE_FILE"
 	fi
 }
 
 # Show info (format: text\ntooltip\nclass)
 show_info() {
-	if [[ $(cat "$STATE_FILE") == "on" ]]; then
+	if is_enabled; then
 		echo -e "󰳑\nAnimations ON\non"
 	else
 		echo -e "󰳒\nAnimations OFF\noff"
@@ -30,7 +28,7 @@ show_info() {
 }
 
 # Main
-if [[ "$1" == "--toggle" ]]; then
+if [[ "${1:-}" == "--toggle" ]]; then
 	toggle_animations
 else
 	show_info

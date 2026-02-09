@@ -29,7 +29,7 @@ window#waybar.hidden {
 #custom-power, #custom-themes, #custom-lightmode {
 	color: @background;
 	border-radius: 10px;
-	margin: 6px 6px 6px 0px;
+	margin: 6px 6px 6px 6px;
 	padding: 2px 8px 2px 8px;
 }
 
@@ -67,7 +67,7 @@ window#waybar.hidden {
 	color: @foreground;
 	font-size: 16px;
 	border-radius: 10px;
-	margin: 6px 0px 6px 6px ;
+	margin: 6px 6px 6px 6px;
 	padding: 4px 9px;
 }
 #custom-sunset.on {
@@ -90,16 +90,17 @@ window#waybar.hidden {
 }
 
 /** ********** Idle Inhibitor ********** **/
-#idle_inhibitor {
-	background-color: @foreground;
-	color: @background;
-	border-radius: 10px;
-	margin: 6px 6px 6px 6px;
-	padding: 4px 6px;
-}
-#idle_inhibitor.deactivated {
+#custom-idle {
 	background-color: @background-alt1;
 	color: @foreground;
+	font-size: 16px;
+	border-radius: 10px;
+	margin: 6px 6px 6px 6px;
+	padding: 4px 9px;
+}
+#custom-idle.on {
+	background-color: @foreground;
+	color: @background;
 }
 
 /** ********** Tray ********** **/
