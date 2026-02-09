@@ -1,9 +1,9 @@
 # =============================================================================
-# Hyprland Dotfiles - AUR Packages
+# Hyprland Dotfiles - Paru (AUR) Packages
 # =============================================================================
 # Lines starting with # are comments
 # One package per line
-# Requires an AUR helper (yay or paru)
+# Install with: paru -S --needed $(grep -v '^#' packages/paru.txt | grep -v '^$' | tr '\n' ' ')
 
 # -----------------------------------------------------------------------------
 # Network Menu

@@ -92,24 +92,23 @@ check_dependencies() {
 # =============================================================================
 
 install_aur_helper() {
-    if command -v yay &> /dev/null; then
-        AUR_HELPER="yay"
-        print_success "AUR helper found: yay"
-    elif command -v paru &> /dev/null; then
+    if command -v paru &> /dev/null; then
         AUR_HELPER="paru"
         print_success "AUR helper found: paru"
     else
-        print_warning "No AUR helper found. Installing yay..."
+        print_warning "paru not found. Installing paru..."
         if [[ "$DRY_RUN" == true ]]; then
-            print_dry "Install yay from AUR"
-            AUR_HELPER="yay"
+            print_dry "Install paru from AUR"
+            AUR_HELPER="paru"
         else
-            sudo pacman -S --needed --noconfirm base-devel git
-            git clone https://aur.archlinux.org/yay.git /tmp/yay-install
-            (cd /tmp/yay-install && makepkg -si --noconfirm)
-            rm -rf /tmp/yay-install
-            AUR_HELPER="yay"
-            print_success "yay installed successfully"
+            sudo pacman -S --needed --noconfirm base-devel git rust
+            local tmpdir
+            tmpdir="$(mktemp -d)"
+            git clone https://aur.archlinux.org/paru.git "$tmpdir/paru"
+            (cd "$tmpdir/paru" && makepkg -si --noconfirm)
+            rm -rf "$tmpdir"
+            AUR_HELPER="paru"
+            print_success "paru installed successfully"
         fi
     fi
 }
@@ -118,7 +117,7 @@ install_packages() {
     print_header "Installing Packages"
 
     local pacman_file="$DOTFILES_DIR/packages/pacman.txt"
-    local aur_file="$DOTFILES_DIR/packages/aur.txt"
+    local aur_file="$DOTFILES_DIR/packages/paru.txt"
 
     # Install pacman packages
     if [[ -f "$pacman_file" ]]; then
@@ -316,7 +315,7 @@ install_sddm_theme() {
     # Check if sugar-candy theme is installed
     if [[ ! -d "$sddm_theme_dir" ]]; then
         print_warning "SDDM sugar-candy theme not found. Skipping SDDM theme setup."
-        print_info "Install it with: yay -S sddm-sugar-candy-git"
+        print_info "Install it with: paru -S sddm-sugar-candy-git"
         return
     fi
 

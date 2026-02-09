@@ -112,10 +112,14 @@ ttf-jetbrains-mono-nerd
 nano
 vim
 btop
+man-db
+man-pages
 
 # -----------------------------------------------------------------------------
 # Utilities
 # -----------------------------------------------------------------------------
 pastel
+libarchive
+bubblewrap
 gsettings-desktop-schemas
 polkit-gnome
