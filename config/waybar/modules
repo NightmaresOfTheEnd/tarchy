@@ -63,6 +63,19 @@
         "tooltip": true,
     },
 
+	// waybar-power-profiles-daemon
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-format": "Power profile: {profile}",
+        "tooltip": true,
+        "format-icons": {
+            "default": "",
+            "performance": "",
+            "balanced": "",
+            "power-saver": ""
+        },
+    },
+
 	// waybar-bluetooth
     "bluetooth": {
         //"controller": "controller1",

@@ -256,6 +256,16 @@ window#waybar.hidden {
     animation-direction: alternate;
 }
 
+/** ********** Power Profile ********** **/
+#power-profiles-daemon {
+	color: @foreground;
+	background-color: @background-alt2;
+	border-radius: 10px;
+	margin: 6px;
+	padding: 4px 6px;
+	min-width: 16px;
+}
+
 /** ********** Network ********** **/
 #network {
 	color: @foreground;
@@ -339,7 +349,7 @@ window#waybar.hidden {
 }
 
 /** ********** Common style ********** **/
-#backlight, 
+#backlight,
 #battery,
 #clock,
 #cpu,
