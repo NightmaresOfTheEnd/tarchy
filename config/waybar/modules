@@ -69,7 +69,7 @@
         "tooltip-format": "Power profile: {profile}",
         "tooltip": true,
         "format-icons": {
-            "default": "",
+            "default": "",
             "performance": "",
             "balanced": "",
             "power-saver": ""

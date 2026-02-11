@@ -26,6 +26,9 @@ fi
 # Lauch statusbar (waybar)
 ~/.config/hypr/scripts/statusbar &
 
+# Set default power profile
+powerprofilesctl set power-saver &
+
 # Start network manager applet
 nm-applet --indicator &
 
