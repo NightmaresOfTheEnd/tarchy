@@ -422,6 +422,8 @@ enable_services() {
         "acpid"
         "power-profiles-daemon"
         "tailscaled"
+        "firewalld"
+        "libvirtd"
     )
 
     # Display manager
@@ -444,6 +446,19 @@ enable_services() {
             sudo systemctl enable --now "$service" 2>/dev/null || print_warning "Could not enable $service"
         fi
     done
+
+    # Virtualization setup (libvirt group + default network)
+    print_info "Configuring virtualization..."
+    if [[ "$DRY_RUN" == true ]]; then
+        print_dry "sudo usermod -aG libvirt $(whoami)"
+        print_dry "sudo virsh net-autostart default"
+        print_dry "sudo virsh net-start default"
+    else
+        sudo usermod -aG libvirt "$(whoami)" 2>/dev/null || print_warning "Could not add user to libvirt group"
+        sudo virsh net-autostart default 2>/dev/null || print_warning "Could not autostart default network"
+        sudo virsh net-start default 2>/dev/null || print_warning "Could not start default network (may already be running)"
+        print_success "Virtualization configured (re-login for group membership)"
+    fi
 
     # Enable display manager (SDDM)
     print_info "Enabling display manager (SDDM)..."
@@ -607,6 +622,8 @@ main() {
     echo -e "  - Tailscale"
     echo -e "  - ACPID"
     echo -e "  - Pipewire audio (user session)"
+    echo -e "  - Firewalld (firewall)"
+    echo -e "  - Libvirtd (virtualization)"
     echo -e "\n${BOLD}Next steps:${NC}"
     echo -e "  1. Reboot your system: ${CYAN}sudo reboot${NC}"
     echo -e "  2. Select ${CYAN}Hyprland${NC} from the SDDM login screen"
