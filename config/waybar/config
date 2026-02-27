@@ -23,7 +23,7 @@
     "ipc": false, 					// Control waybar with `swaymsg bar` commands (Sway only, not needed for Hyprland)
 
     //"modules-left": ["custom/menu", "hyprland/workspaces", "idle_inhibitor", "tray", "mpd#2", "mpd#3", "mpd#4", "mpd" ],
-    "modules-left": ["custom/menu", "hyprland/submap", "cpu", "cpu#2", "memory", "memory#2", "disk", "disk#2", "tray" ],
+    "modules-left": ["custom/menu", "hyprland/submap", "cpu", "cpu#2", "memory", "memory#2", "disk", "disk#2", "tray", "custom/tap" ],
     "modules-center": ["hyprland/workspaces"],
     "modules-right": ["custom/animations", "custom/sunset", "custom/idle", "custom/themes", "pulseaudio", "pulseaudio#2", "backlight", "backlight#2", "power-profiles-daemon", "battery", "battery#2", "bluetooth", "bluetooth#2", "network", "network#2", "clock", "clock#2", "custom/power"],
 }

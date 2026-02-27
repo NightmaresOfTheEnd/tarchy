@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+## Script for toggling touchpad tap-to-click
+
+is_active() {
+	val=$(hyprctl getoption input:touchpad:tap-to-click -j | jq '.int')
+	[[ "$val" == "1" ]]
+}
+
+toggle() {
+	if is_active; then
+		hyprctl keyword input:touchpad:tap-to-click 0
+	else
+		hyprctl keyword input:touchpad:tap-to-click 1
+	fi
+}
+
+show_info() {
+	if is_active; then
+		echo -e "TAP ON\nTap-to-click on\non"
+	else
+		echo -e "TAP OFF\nTap-to-click off\noff"
+	fi
+}
+
+if [[ "${1:-}" == "--toggle" ]]; then
+	toggle
+else
+	show_info
+fi

@@ -336,6 +336,15 @@
          "on-click": "activate",
     },
 
+	// waybar-tap-to-click
+    "custom/tap": {
+         "exec": "$HOME/.config/waybar/tap_to_click",
+         "interval": 1,
+         "format": "{}",
+         "tooltip": false,
+         "on-click": "$HOME/.config/waybar/tap_to_click --toggle",
+    },
+
 	// hyprland-submap
     "hyprland/submap": {
          "format": "{}",
