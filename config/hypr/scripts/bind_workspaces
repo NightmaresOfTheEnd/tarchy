@@ -14,8 +14,14 @@ if [[ -z "$EXTERNAL" ]]; then
 fi
 
 for ws in 6 7 8 9 10; do
-	hyprctl keyword workspace "$ws, monitor:$EXTERNAL"
+	hyprctl keyword workspace "$ws, monitor:$EXTERNAL, default:true"
 done
 
-# Set workspace 6 as default on the external monitor
-hyprctl keyword workspace "6, monitor:$EXTERNAL, default:true"
+# Pre-create all workspaces on the external monitor so they exist
+# (prevents new workspaces from opening on the focused/laptop monitor)
+CURRENT=$(hyprctl activeworkspace -j | jq -r '.id')
+for ws in 6 7 8 9 10; do
+	hyprctl dispatch workspace "$ws"
+done
+# Switch back to the original workspace
+hyprctl dispatch workspace "$CURRENT"
