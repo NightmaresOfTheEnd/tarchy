@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+## Bind workspaces 6-10 to the first non-laptop external monitor.
+## Runs at startup and on monitor hotplug.
+
+LAPTOP="eDP-1"
+
+# Find the first connected monitor that isn't the laptop
+EXTERNAL=$(hyprctl monitors -j | jq -r ".[] | select(.name != \"$LAPTOP\") | .name" | head -n1)
+
+if [[ -z "$EXTERNAL" ]]; then
+	exit 0
+fi
+
+for ws in 6 7 8 9 10; do
+	hyprctl keyword workspace "$ws, monitor:$EXTERNAL"
+done
+
+# Set workspace 6 as default on the external monitor
+hyprctl keyword workspace "6, monitor:$EXTERNAL, default:true"
