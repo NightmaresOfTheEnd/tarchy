@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage: workspace_action <switch|move> <workspace_id>
+# For workspaces 6-10, ensures the workspace is created on the external monitor.
+
+ACTION=$1
+WS=$2
+LAPTOP="eDP-1"
+
+if [[ $WS -ge 6 && $WS -le 10 ]]; then
+	EXTERNAL=$(hyprctl monitors -j | jq -r ".[] | select(.name != \"$LAPTOP\") | .name" | head -n1)
+	if [[ -n "$EXTERNAL" ]]; then
+		hyprctl keyword workspace "$WS, monitor:$EXTERNAL"
+	fi
+fi
+
+case "$ACTION" in
+	switch) hyprctl dispatch workspace "$WS" ;;
+	move)   hyprctl dispatch movetoworkspace "$WS" ;;
+esac
