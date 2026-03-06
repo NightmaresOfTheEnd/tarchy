@@ -267,7 +267,7 @@ apply_foot() {
 	# foot : colors (only background from pywal, text colors stay static)
 	cat > ${PATH_FOOT}/colors.ini <<- _EOF_
 		## Colors configuration
-		[colors]
+		[colors-dark]
 		alpha=0.7
 		foreground=CDD6F4
 		background=${background:1}
