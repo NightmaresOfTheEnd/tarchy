@@ -10,6 +10,8 @@ configuration {
     display-run:                "";
     display-filebrowser:        "";
 	drun-display-format:        "{name}";
+    kb-mode-previous:           "Super+h";
+    kb-mode-next:               "Super+l";
 }
 
 /*****----- Global Properties -----*****/
@@ -20,12 +22,12 @@ configuration {
 window {
     /* properties for window widget */
     transparency:                "real";
-    location:                    west;
-    anchor:                      west;
+    location:                    center;
+    anchor:                      center;
     fullscreen:                  false;
     width:                       500px;
-    height:                      96%;
-    x-offset:                    20px;
+    height:                      60%;
+    x-offset:                    0px;
     y-offset:                    0px;
 
     /* properties for all widgets */
