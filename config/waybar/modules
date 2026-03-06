@@ -170,7 +170,6 @@
     "custom/menu": {
          "format": "",
          "tooltip": false,
-         //"on-click": "$HOME/.config/hypr/scripts/wofi_menu",
          "on-click": "$HOME/.config/hypr/scripts/rofi_launcher",
          "on-click-right": "$HOME/.config/hypr/scripts/rofi_runner",
     },

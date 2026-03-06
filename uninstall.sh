@@ -67,7 +67,6 @@ remove_symlinks() {
         "hypr"
         "waybar"
         "rofi"
-        "wofi"
         "mako"
         "wlogout"
         "foot"

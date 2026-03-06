@@ -86,7 +86,6 @@ The script will automatically:
 │   │   └── wallpapers/     # Wallpapers
 │   ├── waybar/             # Status bar
 │   ├── rofi/               # App launcher
-│   ├── wofi/               # Alt launcher
 │   ├── mako/               # Notifications
 │   ├── wlogout/            # Logout menu
 │   ├── foot/               # Terminal

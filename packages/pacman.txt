@@ -20,7 +20,6 @@ hyprland-guiutils
 # -----------------------------------------------------------------------------
 mako
 waybar
-wofi
 rofi
 rofi-calc
 

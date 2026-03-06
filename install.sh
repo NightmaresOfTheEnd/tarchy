@@ -219,7 +219,6 @@ install_configs() {
         "hypr"
         "waybar"
         "rofi"
-        "wofi"
         "mako"
         "wlogout"
         "foot"

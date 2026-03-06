@@ -15,7 +15,6 @@ PATH_MAKO="$HOME/.config/mako"
 PATH_ROFI="$HOME/.config/rofi"
 PATH_WAYB="$HOME/.config/waybar"
 PATH_WLOG="$HOME/.config/wlogout"
-PATH_WOFI="$HOME/.config/wofi"
 
 ## Source Theme File ------------------------
 CURRENT_THEME="$DIR/theme/current.bash"
@@ -414,25 +413,6 @@ apply_wlogout() {
 	EOF
 }
 
-## Wofi --------------------------------------
-apply_wofi() {
-	# wofi : colors	
-	sed -i ${PATH_WOFI}/style.css \
-		-e "s/@define-color background .*/@define-color background      ${background};/g" \
-		-e "s/@define-color background-alt1 .*/@define-color background-alt1 ${modbackground[1]};/g" \
-		-e "s/@define-color background-alt2 .*/@define-color background-alt2 ${modbackground[2]};/g" \
-		-e "s/@define-color foreground .*/@define-color foreground      ${foreground};/g" \
-		-e "s/@define-color selected .*/@define-color selected        ${accent};/g" \
-		-e "s/@define-color black .*/@define-color black           ${color0};/g" \
-		-e "s/@define-color red .*/@define-color red             ${color1};/g" \
-		-e "s/@define-color green .*/@define-color green           ${color2};/g" \
-		-e "s/@define-color yellow .*/@define-color yellow          ${color3};/g" \
-		-e "s/@define-color blue .*/@define-color blue            ${color4};/g" \
-		-e "s/@define-color magenta .*/@define-color magenta         ${color5};/g" \
-		-e "s/@define-color cyan .*/@define-color cyan            ${color6};/g" \
-		-e "s/@define-color white .*/@define-color white           ${color7};/g"
-}
-
 ## GTK Theme ---------------------------------
 apply_gtk() {
 	sed -i "$DIR"/scripts/gtkthemes \
@@ -516,7 +496,6 @@ apply_mako
 apply_rofi
 apply_waybar
 apply_wlogout
-apply_wofi
 apply_hyprlock
 apply_hypr
 
