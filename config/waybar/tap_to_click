@@ -17,9 +17,9 @@ toggle() {
 
 show_info() {
 	if is_active; then
-		echo -e "TAP ON\nTap-to-click on\non"
+		echo -e "󰍽\nTap-to-click on\non"
 	else
-		echo -e "TAP OFF\nTap-to-click off\noff"
+		echo -e "󰍾\nTap-to-click off\noff"
 	fi
 }
 

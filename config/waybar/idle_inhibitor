@@ -20,9 +20,9 @@ toggle() {
 # Show info (format: text\ntooltip\nclass)
 show_info() {
 	if is_active; then
-		echo -e "\nIdle active\noff"
+		echo -e "󰈈\nSleep: active\noff"
 	else
-		echo -e "\nIdle inhibited\non"
+		echo -e "󰈉\nSleep: inhibited\non"
 	fi
 }
 
