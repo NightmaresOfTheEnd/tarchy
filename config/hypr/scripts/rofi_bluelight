@@ -46,15 +46,19 @@ run_rofi() {
 	echo -e "$option_1\n$option_2\n$option_3\n$option_4\n$option_5" | rofi_cmd
 }
 
+# State file (shared with waybar sunset module)
+STATE_FILE="$HOME/.config/hypr/theme/.sunset_state"
+
 # Apply temperature
 apply_temp() {
 	local temp="$1"
 	local label="$2"
-	pkill -x hyprsunset || true
-	if [[ "$temp" -lt 6500 ]]; then
-		sleep 0.2
-		hyprsunset -t "$temp" &
-		disown
+	if [[ "$temp" -ge 6500 ]]; then
+		hyprctl hyprsunset identity
+		echo "day" > "$STATE_FILE"
+	else
+		hyprctl hyprsunset temperature "$temp"
+		echo "night" > "$STATE_FILE"
 	fi
 	${notify_cmd} "Blue Light Filter" "$label"
 }
