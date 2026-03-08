@@ -7,14 +7,20 @@
 # Vars
 DIR="$HOME/.config/hypr"
 STATE_FILE="$DIR/theme/.sunset_state"
+TEMP_FILE="$DIR/theme/.sunset_temp"
 if [[ ! -f "$STATE_FILE" ]]; then
     echo "day" > "$STATE_FILE"
+fi
+if [[ ! -f "$TEMP_FILE" ]]; then
+    echo "5000" > "$TEMP_FILE"
 fi
 
 # Apply theme accordingly
 apply_mode() {
-	if [[ `cat "$STATE_FILE"` = "day" ]]; then
-		hyprctl hyprsunset temperature 5000
+	local temp
+	temp=$(cat "$TEMP_FILE")
+	if [[ $(cat "$STATE_FILE") = "day" ]]; then
+		hyprctl hyprsunset temperature "$temp"
 		echo "night" > "$STATE_FILE"
 	else
 		hyprctl hyprsunset identity
@@ -24,10 +30,12 @@ apply_mode() {
 
 # Info
 show_info() {
-	if [[ `cat "$STATE_FILE"` = "day" ]]; then
-		echo -e "󰌶\nday\noff"
+	local temp
+	temp=$(cat "$TEMP_FILE")
+	if [[ $(cat "$STATE_FILE") = "day" ]]; then
+		printf '{"text": "󰌶", "tooltip": "Blue Light Filter: Off\\nTemperature: %sK", "class": "day"}\n' "$temp"
 	else
-		echo -e "󱠂\nnight\non"
+		printf '{"text": "󱠂 %sK", "tooltip": "Blue Light Filter: On\\nTemperature: %sK", "class": "night"}\n' "$temp" "$temp"
 	fi
 }
 
