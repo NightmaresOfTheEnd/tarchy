@@ -150,10 +150,9 @@
 
     "custom/sunset": {
          "exec": "$HOME/.config/waybar/sunset",
-         "return-type": "json",
          "interval": 1,
-         "format": "{text}",
-         "tooltip": true,
+         "format": "{}",
+         "tooltip": false,
          "on-click": "$HOME/.config/waybar/sunset --toggle",
          "on-click-right": "$HOME/.config/hypr/scripts/rofi_bluelight",
          "on-scroll-up": "hyprctl hyprsunset gamma +5",

@@ -28,14 +28,14 @@ apply_mode() {
 	fi
 }
 
-# Info
+# Info (3-line format: text, tooltip, class)
 show_info() {
 	local temp
 	temp=$(cat "$TEMP_FILE")
 	if [[ $(cat "$STATE_FILE") = "day" ]]; then
-		printf '{"text": "󰌶", "tooltip": "Blue Light Filter: Off\\nTemperature: %sK", "class": "day"}\n' "$temp"
+		printf '󰖚\nBlue light: off\noff\n'
 	else
-		printf '{"text": "󱠂 %sK", "tooltip": "Blue Light Filter: On\\nTemperature: %sK", "class": "night"}\n' "$temp" "$temp"
+		printf '󰖙 %sK\nBlue light: %sK\non\n' "$temp" "$temp"
 	fi
 }
 
