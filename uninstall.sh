@@ -73,6 +73,7 @@ remove_symlinks() {
         "ranger"
         "ncmpcpp"
         "geany"
+        "vim"
     )
 
     for config in "${configs[@]}"; do

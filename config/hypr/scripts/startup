@@ -36,4 +36,4 @@ powerprofilesctl set power-saver &
 nm-applet --indicator &
 
 # Start mpd
-exec mpd &
+mpd &
