@@ -31,6 +31,27 @@ fi
 WALLDIR="$HOME/.config/hypr/wallpapers"
 DEFAULT_WALLPAPER="$WALLDIR/wallpaper.png"
 
+## Thumbnail cache for wallpaper selector
+THUMB_DIR="$HOME/.cache/wallpaper-thumbs"
+THUMB_SIZE="400"
+
+## Generate a cached thumbnail for a wallpaper image
+generate_thumbnail() {
+	local src="$1"
+	local name
+	name="$(basename "$src")"
+	local thumb="$THUMB_DIR/${name%.*}.png"
+
+	mkdir -p "$THUMB_DIR"
+
+	# Only regenerate if source is newer than cached thumbnail
+	if [[ ! -f "$thumb" ]] || [[ "$src" -nt "$thumb" ]]; then
+		magick "$src" -thumbnail "${THUMB_SIZE}x${THUMB_SIZE}" "$thumb"
+	fi
+
+	echo "$thumb"
+}
+
 ## Pick random wallpaper from folder
 pick_random_wallpaper() {
 	find "$WALLDIR" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) ! -name "wallpaper.png" | shuf -n 1
@@ -138,14 +159,22 @@ source_pywal_select() {
 		exit
 	fi
 
-	# Build rofi menu with just filenames
-	menu=""
+	# Generate thumbnails in parallel
 	for wp in "${wallpapers[@]}"; do
-		menu+="$(basename "$wp")\n"
+		generate_thumbnail "$wp" > /dev/null &
+	done
+	wait
+
+	# Build rofi menu with thumbnail icons
+	rofi_input=""
+	for wp in "${wallpapers[@]}"; do
+		name="$(basename "$wp")"
+		thumb="$THUMB_DIR/${name%.*}.png"
+		rofi_input+="${name}\0icon\x1f${thumb}\n"
 	done
 
-	# Show rofi selector (positioned on right side)
-	selected=$(echo -e "$menu" | rofi -dmenu -p "Select Wallpaper" -theme "$HOME/.config/rofi/launcher.rasi" -theme-str 'window { location: east; }')
+	# Show rofi grid selector with thumbnails
+	selected=$(printf "$rofi_input" | rofi -dmenu -p "Select Wallpaper" -no-custom -theme "$HOME/.config/rofi/wallpaper.rasi")
 
 	if [[ -z "$selected" ]]; then
 		exit  # User cancelled
