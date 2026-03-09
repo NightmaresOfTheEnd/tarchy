@@ -223,7 +223,6 @@ install_configs() {
         "wlogout"
         "foot"
         "ranger"
-        "ncmpcpp"
         "geany"
         "vim"
     )

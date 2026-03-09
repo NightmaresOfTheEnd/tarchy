@@ -35,5 +35,3 @@ powerprofilesctl set power-saver &
 # Start network manager applet
 nm-applet --indicator &
 
-# Start mpd
-mpd &

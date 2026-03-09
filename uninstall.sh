@@ -71,7 +71,6 @@ remove_symlinks() {
         "wlogout"
         "foot"
         "ranger"
-        "ncmpcpp"
         "geany"
         "vim"
     )
