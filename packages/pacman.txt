@@ -61,7 +61,9 @@ python-pywal
 libinput
 upower
 acpid
-power-profiles-daemon
+tlp
+tlp-rdw
+tlp-pd
 
 # -----------------------------------------------------------------------------
 # Network & Bluetooth
