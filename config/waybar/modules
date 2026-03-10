@@ -160,6 +160,15 @@
          "smooth-scrolling-threshold": 1,
     },
 
+    "custom/monitor": {
+         "exec": "$HOME/.config/waybar/external_monitor",
+         "interval": 1,
+         "format": "{}",
+         "tooltip": false,
+         "on-click": "$HOME/.config/waybar/external_monitor --toggle",
+         "on-click-right": "$HOME/.config/hypr/scripts/rofi_monitor",
+    },
+
     "custom/animations": {
          "exec": "$HOME/.config/waybar/animations",
          "interval": 1,

@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+## External Monitor Selector - Rofi menu for toggling external monitors
+
+LAPTOP="eDP-1"
+STATE_FILE="$HOME/.config/hypr/theme/.monitor_state"
+RASI="$HOME/.config/rofi/monitor.rasi"
+
+prompt='External Monitor'
+notify_cmd="notify-send -h string:x-canonical-private-synchronous:sys-notify-monitor -u low"
+
+# Get active external monitor names
+active_monitors=$(hyprctl monitors -j | jq -r \
+	".[] | select(.name != \"$LAPTOP\") | .name" 2>/dev/null || true)
+
+# Get all external monitors (including disabled)
+all_monitors=$(hyprctl monitors all -j | jq -r \
+	".[] | select(.name != \"$LAPTOP\") | .name" 2>/dev/null || true)
+
+if [[ -z "$all_monitors" ]]; then
+	${notify_cmd} "External Monitor" "No external monitors found"
+	exit 0
+fi
+
+# Count active
+active_count=0
+if [[ -n "$active_monitors" ]]; then
+	active_count=$(echo "$active_monitors" | wc -l)
+fi
+mesg="Active external monitors: $active_count"
+
+# Build options list
+options=""
+while IFS= read -r mon; do
+	if [[ -n "$active_monitors" ]] && echo "$active_monitors" | grep -qx "$mon" 2>/dev/null; then
+		options+="󰍹  $mon (active)\n"
+	else
+		options+="󰍺  $mon (disabled)\n"
+	fi
+done <<< "$all_monitors"
+options="${options%\\n}"
+
+# Rofi CMD
+chosen=$(echo -e "$options" | rofi -dmenu \
+	-p "$prompt" \
+	-mesg "$mesg" \
+	-markup-rows \
+	-normal-window \
+	-theme "${RASI}")
+
+[[ -z "$chosen" ]] && exit 0
+
+# Extract monitor name: strip icon prefix and status suffix
+monitor_name=$(echo "$chosen" | sed 's/^[^ ]* *//; s/ *(active)$//; s/ *(disabled)$//')
+
+if echo "$chosen" | grep -q "(active)"; then
+	hyprctl keyword monitor "$monitor_name, disable"
+	${notify_cmd} "External Monitor" "$monitor_name disabled"
+else
+	hyprctl keyword monitor "$monitor_name, preferred, auto, 1"
+	echo "$monitor_name" > "$STATE_FILE"
+	sleep 0.5
+	~/.config/hypr/scripts/bind_workspaces
+	${notify_cmd} "External Monitor" "$monitor_name enabled"
+fi

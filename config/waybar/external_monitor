@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+## External Monitor Toggle - Waybar module script
+## Left-click toggles the stored external monitor on/off.
+## Right-click opens rofi selector to choose which monitor.
+
+LAPTOP="eDP-1"
+STATE_FILE="$HOME/.config/hypr/theme/.monitor_state"
+
+[[ -f "$STATE_FILE" ]] || echo "" > "$STATE_FILE"
+
+# Toggle the stored/first external monitor
+toggle_monitor() {
+	local target
+	target=$(head -n1 "$STATE_FILE" 2>/dev/null)
+
+	# If no stored monitor, find the first external one
+	if [[ -z "$target" ]]; then
+		target=$(hyprctl monitors all -j | jq -r \
+			"[.[] | select(.name != \"$LAPTOP\")] | .[0].name // empty" 2>/dev/null)
+		if [[ -z "$target" ]]; then
+			notify-send -h string:x-canonical-private-synchronous:sys-notify-monitor \
+				-u low "External Monitor" "No external monitor found"
+			return
+		fi
+		echo "$target" > "$STATE_FILE"
+	fi
+
+	# Check if currently active
+	local is_active
+	is_active=$(hyprctl monitors -j | jq -r \
+		".[] | select(.name == \"$target\") | .name" 2>/dev/null)
+
+	if [[ -n "$is_active" ]]; then
+		hyprctl keyword monitor "$target, disable"
+		notify-send -h string:x-canonical-private-synchronous:sys-notify-monitor \
+			-u low "External Monitor" "$target disabled"
+	else
+		hyprctl keyword monitor "$target, preferred, auto, 1"
+		sleep 0.5
+		~/.config/hypr/scripts/bind_workspaces
+		notify-send -h string:x-canonical-private-synchronous:sys-notify-monitor \
+			-u low "External Monitor" "$target enabled"
+	fi
+}
+
+# Show info (3-line format: text, tooltip, class)
+show_info() {
+	local active
+	active=$(hyprctl monitors -j | jq -r \
+		"[.[] | select(.name != \"$LAPTOP\")] | .[0].name // empty" 2>/dev/null)
+
+	if [[ -n "$active" ]]; then
+		printf '󰍹\nExternal: %s\non\n' "$active"
+	else
+		printf '󰍹\nExternal: off\noff\n'
+	fi
+}
+
+# Main
+if [[ "${1:-}" == '--toggle' ]]; then
+	toggle_monitor
+else
+	show_info
+fi

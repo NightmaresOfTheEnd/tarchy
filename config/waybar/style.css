@@ -75,6 +75,20 @@ window#waybar.hidden {
 	color: @background;
 }
 
+/** ********** External Monitor Toggle ********** **/
+#custom-monitor {
+	background-color: @background-alt1;
+	color: @foreground;
+	font-size: 16px;
+	border-radius: 10px;
+	margin: 6px 6px 6px 6px;
+	padding: 4px 9px;
+}
+#custom-monitor.on {
+	background-color: @foreground;
+	color: @background;
+}
+
 /** ********** Animations Toggle ********** **/
 #custom-animations {
     background-color: @background-alt1;
