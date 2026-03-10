@@ -1,29 +1,23 @@
 #!/usr/bin/env bash
 
 ## External Monitor Toggle - Waybar module script
-## Left-click toggles the stored external monitor on/off.
-## Right-click opens rofi selector to choose which monitor.
+## Left-click toggles the selected external monitor on/off.
+## Right-click opens rofi selector to pick which monitor to use.
 
 LAPTOP="eDP-1"
 STATE_FILE="$HOME/.config/hypr/theme/.monitor_state"
 
 [[ -f "$STATE_FILE" ]] || echo "" > "$STATE_FILE"
 
-# Toggle the stored/first external monitor
+# Toggle the selected external monitor on/off
 toggle_monitor() {
 	local target
 	target=$(head -n1 "$STATE_FILE" 2>/dev/null)
 
-	# If no stored monitor, find the first external one
 	if [[ -z "$target" ]]; then
-		target=$(hyprctl monitors all -j | jq -r \
-			"[.[] | select(.name != \"$LAPTOP\")] | .[0].name // empty" 2>/dev/null)
-		if [[ -z "$target" ]]; then
-			notify-send -h string:x-canonical-private-synchronous:sys-notify-monitor \
-				-u low "External Monitor" "No external monitor found"
-			return
-		fi
-		echo "$target" > "$STATE_FILE"
+		notify-send -h string:x-canonical-private-synchronous:sys-notify-monitor \
+			-u low "External Monitor" "No monitor selected — right-click to choose"
+		return
 	fi
 
 	# Check if currently active
