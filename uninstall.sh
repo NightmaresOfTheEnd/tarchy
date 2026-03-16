@@ -285,9 +285,13 @@ parse_args() {
             --remove-fonts)
                 REMOVE_FONTS=true
                 ;;
+            --remove-packages)
+                REMOVE_PACKAGES=true
+                ;;
             --remove-all)
                 REMOVE_THEMES=true
                 REMOVE_FONTS=true
+                REMOVE_PACKAGES=true
                 ;;
             --list-backups)
                 list_backups
@@ -318,7 +322,11 @@ main() {
 
     # Confirm
     if [[ "$DRY_RUN" == false ]]; then
-        echo -e "${YELLOW}This will remove your Hyprland configuration symlinks.${NC}"
+        if [[ "$REMOVE_PACKAGES" == true ]]; then
+            echo -e "${YELLOW}This will remove your Hyprland configuration symlinks AND uninstall packages.${NC}"
+        else
+            echo -e "${YELLOW}This will remove your Hyprland configuration symlinks.${NC}"
+        fi
         read -p "Are you sure you want to continue? [y/N] " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -335,6 +343,9 @@ main() {
 
     # Remove fonts if requested
     [[ "$REMOVE_FONTS" == true ]] && remove_fonts
+
+    # Remove packages if requested
+    [[ "$REMOVE_PACKAGES" == true ]] && remove_packages
 
     # Summary
     print_header "Uninstall Complete"
