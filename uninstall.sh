@@ -10,6 +10,7 @@ set -euo pipefail
 # Configuration
 # =============================================================================
 
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="$HOME/.config"
 LOCAL_SHARE="$HOME/.local/share"
 BACKUP_BASE="$HOME/.dotfiles-backup"
@@ -27,6 +28,7 @@ BOLD='\033[1m'
 DRY_RUN=false
 REMOVE_THEMES=false
 REMOVE_FONTS=false
+REMOVE_PACKAGES=false
 
 # =============================================================================
 # Helper Functions
@@ -166,6 +168,59 @@ remove_fonts() {
     fi
 }
 
+remove_packages() {
+    print_header "Removing Installed Packages"
+
+    local pacman_file="$DOTFILES_DIR/packages/pacman.txt"
+    local aur_file="$DOTFILES_DIR/packages/paru.txt"
+
+    # Collect installed packages from the pacman list
+    if [[ -f "$pacman_file" ]]; then
+        local to_remove=()
+        while IFS= read -r pkg; do
+            [[ -z "$pkg" || "$pkg" == \#* ]] && continue
+            if pacman -Qi "$pkg" &> /dev/null; then
+                to_remove+=("$pkg")
+            fi
+        done < "$pacman_file"
+
+        if [[ ${#to_remove[@]} -gt 0 ]]; then
+            print_info "Removing ${#to_remove[@]} official packages..."
+            if [[ "$DRY_RUN" == true ]]; then
+                print_dry "sudo pacman -Rns ${to_remove[*]}"
+            else
+                sudo pacman -Rns --noconfirm "${to_remove[@]}" || print_warning "Some packages could not be removed (may be required by other packages)"
+                print_success "Official packages removed"
+            fi
+        else
+            print_info "No official packages to remove"
+        fi
+    fi
+
+    # Collect installed packages from the AUR list
+    if [[ -f "$aur_file" ]]; then
+        local aur_to_remove=()
+        while IFS= read -r pkg; do
+            [[ -z "$pkg" || "$pkg" == \#* ]] && continue
+            if pacman -Qi "$pkg" &> /dev/null; then
+                aur_to_remove+=("$pkg")
+            fi
+        done < "$aur_file"
+
+        if [[ ${#aur_to_remove[@]} -gt 0 ]]; then
+            print_info "Removing ${#aur_to_remove[@]} AUR packages..."
+            if [[ "$DRY_RUN" == true ]]; then
+                print_dry "sudo pacman -Rns ${aur_to_remove[*]}"
+            else
+                sudo pacman -Rns --noconfirm "${aur_to_remove[@]}" || print_warning "Some AUR packages could not be removed"
+                print_success "AUR packages removed"
+            fi
+        else
+            print_info "No AUR packages to remove"
+        fi
+    fi
+}
+
 list_backups() {
     print_header "Available Backups"
 
@@ -200,7 +255,8 @@ OPTIONS:
     -d, --dry-run       Show what would be done without making changes
     --remove-themes     Also remove installed themes, icons, and cursors
     --remove-fonts      Also remove installed fonts
-    --remove-all        Remove everything (configs, themes, fonts)
+    --remove-packages   Also remove installed packages (pacman + AUR)
+    --remove-all        Remove everything (configs, themes, fonts, packages)
     --list-backups      List available configuration backups
 
 EXAMPLES:

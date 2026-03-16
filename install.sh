@@ -119,6 +119,17 @@ install_packages() {
     local pacman_file="$DOTFILES_DIR/packages/pacman.txt"
     local aur_file="$DOTFILES_DIR/packages/paru.txt"
 
+    # Replace iptables with iptables-nft if needed (they conflict)
+    if pacman -Qi iptables &> /dev/null && ! pacman -Qi iptables-nft &> /dev/null; then
+        print_info "Replacing iptables with iptables-nft..."
+        if [[ "$DRY_RUN" == true ]]; then
+            print_dry "sudo pacman -S --needed --noconfirm iptables-nft (replaces iptables)"
+        else
+            echo -e "y\n" | sudo pacman -S iptables-nft
+            print_success "Replaced iptables with iptables-nft"
+        fi
+    fi
+
     # Install pacman packages
     if [[ -f "$pacman_file" ]]; then
         print_info "Installing official repository packages..."
