@@ -60,6 +60,7 @@ brightnessctl
 python-pywal
 libinput
 upower
+batsignal
 acpid
 tlp
 tlp-rdw
